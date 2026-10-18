@@ -17,7 +17,8 @@ const paths = {
   lock: 'M5 9h10v8H5zm2 0V6a3 3 0 016 0v3',
   overview: 'M3 3h6v6H3zm8 0h6v4h-6zm0 6h6v8h-6zM3 11h6v6H3z',
   activity: 'M2 10h3l2-5 3 10 2-6 2 3h4',
-  webhook: 'M7 6a3 3 0 116 0M10 9l-3 5m6-5l2 5m-9 1a3 3 0 106 0h4a3 3 0 103 -3',
+  // Standard webhook glyph (three linked nodes), drawn on a 24-unit grid.
+  webhook: 'M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2M6 17l3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06M12 6l3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8',
   plug: 'M7 2v4m6-4v4M5 6h10v3a5 5 0 01-10 0zm5 8v4',
   chevron: 'M7 5l5 5-5 5',
   sun: 'M10 6.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM10 2v2m0 12v2M2 10h2m12 0h2M4.3 4.3l1.4 1.4m8.6 8.6l1.4 1.4m0-11.4l-1.4 1.4m-8.6 8.6l-1.4 1.4',
@@ -27,9 +28,10 @@ const paths = {
   user: 'M10 10a3 3 0 100-6 3 3 0 000 6zm-6 7a6 6 0 0112 0',
 };
 export type IconName = keyof typeof paths;
+const GRID_24: Partial<Record<IconName, true>> = { webhook: true };
 export function Icon({ name, size = 16, label }: { name: IconName; size?: number; label?: string }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round"
+    <svg width={size} height={size} viewBox={GRID_24[name] ? '0 0 24 24' : '0 0 20 20'} fill="none" stroke="currentColor" strokeWidth={GRID_24[name] ? 2 : 1.7} strokeLinecap="round" strokeLinejoin="round"
       role={label ? 'img' : undefined} aria-label={label} aria-hidden={label ? undefined : true} focusable="false">
       <path d={paths[name]} />
     </svg>
