@@ -12,12 +12,12 @@ const ok = (name, cond) => results.push(`${cond ? 'PASS' : 'FAIL'}  ${name}`);
 await page.goto(url);
 
 // Sketch layout essentials.
-ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts: Critical/ }).isVisible());
+ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts API: Disrupted/ }).isVisible());
 ok('nav shows triage count', (await page.locator('.nav-count').count()) >= 1);
 
 // Verdict leads with the most severe service and offers one next action.
-ok('verdict headline names critical service', (await page.locator('.verdict-title').innerText()) === 'Payouts is critical');
-await page.getByRole('button', { name: 'Investigate Payouts' }).click();
+ok('verdict headline names critical service', (await page.locator('.verdict-title').innerText()) === 'Payouts API is disrupted');
+await page.getByRole('button', { name: /^Review failed Payouts requests/ }).click();
 const svcCol = await page.locator('table.data tbody tr.row td:nth-child(5)').allInnerTexts();
 ok('Investigate filters activity to Payouts', svcCol.length > 0 && svcCol.every((t) => t === 'Payouts'));
 await page.getByLabel('Service', { exact: true }).selectOption('');
@@ -26,9 +26,9 @@ await page.getByLabel('Service', { exact: true }).selectOption('');
 // Toolbar is just search, service and one errors toggle.
 ok('toolbar has no chip filters', (await page.locator('.activity-toolbar .chip').count()) === 0);
 const triageCount = async () => Number((await page.locator('.nav-item', { hasText: 'API activity' }).locator('.nav-count').innerText()).replace(/,/g, ''));
-await page.getByRole('button', { name: /^Show API errors only/ }).click();
+await page.getByRole('button', { name: /^Failed requests only/ }).click();
 const errRows = await page.locator('tr.row td:nth-child(9)').allInnerTexts();
-ok('errors toggle shows only API errors', errRows.length > 0 && errRows.every((t) => /Failed|Outcome unknown/.test(t)));
+ok('errors toggle shows only API errors', errRows.length > 0 && errRows.every((t) => /Failed|Rejected|Outcome unknown/.test(t)));
 await page.getByLabel('Filter by error').selectOption('GATEWAY_TIMEOUT');
 const errCodes = await page.locator('tr.row td:nth-child(7)').allInnerTexts();
 ok('Error column filter narrows to one code', errCodes.length > 0 && errCodes.every((t) => t.trim() === 'GATEWAY_TIMEOUT'));
@@ -54,19 +54,19 @@ ok(`needs-triage count drops (${before} → ${after})`, after < before);
 ok('timeout shown as Outcome unknown', (await page.getByText('Outcome unknown').count()) > 0);
 
 // Info tip explains jargon on keyboard focus.
-await page.getByRole('button', { name: 'What is P95 latency?' }).focus();
+await page.getByRole('button', { name: 'What is Response time (P95)?' }).focus();
 ok('info tip opens on focus', await page.getByRole('tooltip').isVisible());
 await page.keyboard.press('Escape');
 
 // Slash shortcut focuses search.
 await page.locator('body').click({ position: { x: 5, y: 5 } });
 await page.keyboard.press('/');
-ok('"/" focuses activity search', await page.evaluate(() => document.activeElement?.getAttribute('aria-label') === 'Search API activity'));
+ok('"/" focuses activity search', await page.evaluate(() => document.activeElement?.getAttribute('aria-label') === 'Search API requests'));
 await page.keyboard.press('Escape');
 
 // Successful row shows plain metadata, no triage.
-await page.getByRole('button', { name: /^Show API errors only/ }).click();
-const successRow = page.locator('tr.row:not(.is-failed)').filter({ hasNotText: 'Slow, succeeded' }).first();
+await page.getByRole('button', { name: /^Failed requests only/ }).click();
+const successRow = page.locator('tr.row:not(.is-failed)').filter({ hasNotText: 'Succeeded, slow' }).first();
 await successRow.click();
 ok('success row expands without triage', (await page.locator('.success-detail').count()) === 1 && (await page.locator('.triage').count()) === 0);
 
@@ -79,7 +79,7 @@ ok('customer switch updates scope', (await combo.inputValue()).includes('Acme'))
 ok('dropdown has no Airwallex or All customers', await (async () => { await combo.click(); await combo.fill(''); const t = await page.getByRole('listbox').innerText(); await combo.press('Escape'); return !/Airwallex|All customers/.test(t); })());
 await combo.fill('airbnb'); await combo.press('Enter');
 await page.getByRole('button', { name: /^Sandbox/ }).click();
-ok('missing telemetry shown as No data, never healthy', await page.getByRole('button', { name: /^Wallets: No data/ }).isVisible());
+ok('missing telemetry shown as No data, never healthy', await page.getByRole('button', { name: /^Wallets API: No data/ }).isVisible());
 
 ok('scope line under heading removed', (await page.locator('.scope-chip').count()) === 0);
 
@@ -109,7 +109,7 @@ ok('cancel keeps alert enabled', (await page.getByRole('switch').first().getAttr
 await page.goto(url);
 
 // Download returns the actual dataset.
-const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download mock data (JSON)' }).click()]);
+const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download demo data (JSON)' }).click()]);
 ok('download equals data/nium-dashboard-mock-data.json', JSON.stringify(JSON.parse(readFileSync(await dl.path(), 'utf8'))) === JSON.stringify(JSON.parse(readFileSync('data/nium-dashboard-mock-data.json', 'utf8'))));
 
 // Reflow at 320px (400% zoom of 1280).

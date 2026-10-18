@@ -20,7 +20,7 @@ for (const r of routes) {
 }
 // Expanded failed row with triage panel.
 await page.goto(`${base}#/`, { waitUntil: 'networkidle' });
-await page.getByRole('button', { name: /^Show API errors only/ }).click();
+await page.getByRole('button', { name: /^Failed requests only/ }).click();
 await page.locator('.expand-btn').first().click();
 await page.waitForTimeout(300);
 await page.locator('.activity-panel').screenshot({ path: 'screenshots/triage-expanded.png' });

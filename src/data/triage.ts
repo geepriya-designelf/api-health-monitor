@@ -7,10 +7,10 @@ import type { ApiRequest } from './types';
 
 export type Owner = 'customer' | 'nium_backend' | 'payout_partner' | 'nium_account';
 export const OWNER_LABEL: Record<Owner, string> = {
-  customer: 'Customer integration',
+  customer: "Customer's engineering team",
   nium_backend: 'Nium backend engineering',
-  payout_partner: 'Payout partner (via Nium payout ops)',
-  nium_account: 'Nium product / account team',
+  payout_partner: 'Nium payout operations',
+  nium_account: 'Nium account management',
 };
 
 export interface Diagnosis {
@@ -98,7 +98,7 @@ export function diagnose(r: ApiRequest, scopeRows: ApiRequest[]): Diagnosis {
       const svc = dataset.services.find((s) => s.id === r.service);
       const slowPeers = scopeRows.filter((x) => near(x) && x.endpointId === r.endpointId && x.latencyMs >= SLOW_MS);
       return {
-        needsTriage: false, kind: 'slow', headline: `Slow response on ${epName(r.endpointId)}`,
+        needsTriage: false, kind: 'slow', headline: `${epName(r.endpointId)} succeeded, but slowly`,
         likelyCause: slowPeers.length ? 'Several slow calls on this endpoint at the same time, which points to a service side slowdown.' : 'An isolated latency outlier. The call succeeded.',
         owner: slowPeers.length ? 'nium_backend' : 'customer', confidence: 'low',
         evidence: [`${r.latencyMs.toLocaleString('en-US')} ms against a P95 target of ${svc?.p95TargetMs} ms`, `${slowPeers.length} other slow calls on this endpoint within 30 min`],
@@ -113,7 +113,7 @@ export function diagnose(r: ApiRequest, scopeRows: ApiRequest[]): Diagnosis {
     const returned = r.transactionStatus === 'RETURNED';
     return {
       needsTriage: true, kind: 'async_payout',
-      headline: returned ? 'Payout returned after it was sent' : 'Payout accepted, then failed',
+      headline: returned ? 'Payout returned by the beneficiary bank' : 'Payout accepted, then failed during processing',
       likelyCause: returned
         ? 'The beneficiary bank sent the funds back, usually because of a closed account or a name mismatch.'
         : 'The API accepted the transfer, but it failed during processing. Typical reasons are a beneficiary bank rejection or a compliance hold.',
@@ -135,14 +135,17 @@ export function diagnose(r: ApiRequest, scopeRows: ApiRequest[]): Diagnosis {
   const incident = serverSide && similar.length >= 5;
   const evidence = [
     `HTTP ${r.httpStatus} · ${r.errorCode}: ${r.errorSummary}`,
-    `${similar.length} other ${serverSideRow(r) ? 'server-side failures' : `${r.errorCode} errors`} on ${dataset.services.find((s) => s.id === r.service)?.name} within 30 min`,
-    `${sameEndpointOk.toLocaleString('en-US')} successful calls to the same endpoint in that window`,
+    `${similar.length} other ${serverSideRow(r) ? 'server errors and timeouts' : `${r.errorCode} errors`} on the ${dataset.services.find((s) => s.id === r.service)?.name} API within 30 min`,
+    `${sameEndpointOk.toLocaleString('en-US')} requests to the same endpoint succeeded in that window`,
   ];
-  if (!r.traceAvailable) evidence.push('Trace not retained. Use x-request-id and timestamp for log search.');
+  if (!r.traceAvailable) evidence.push('Trace not retained. Search logs by x-request-id and timestamp instead.');
   return {
     needsTriage: true, kind: base.kind,
-    headline: incident ? `Part of a cluster: ${similar.length + 1} ${dataset.services.find((s) => s.id === r.service)?.name} failures in 30 min` : `${epName(r.endpointId)} failed with ${r.errorCode}`,
-    likelyCause: incident ? `${base.likelyCause} The cluster suggests an ongoing incident rather than a one-off.` : base.likelyCause,
+    headline: incident ? `One of ${similar.length + 1} ${dataset.services.find((s) => s.id === r.service)?.name} API failures in the last 30 minutes`
+      : r.outcome === 'timeout' ? `${epName(r.endpointId)} request timed out`
+        : r.outcome === 'client_error' ? `${epName(r.endpointId)} request was rejected: ${r.errorCode}`
+          : `${epName(r.endpointId)} request failed: ${r.errorCode}`,
+    likelyCause: incident ? `${base.likelyCause} Failures are clustered, which points to an ongoing incident rather than a one-off.` : base.likelyCause,
     owner: base.owner, confidence: incident ? 'high' : base.confidence, evidence,
     steps: base.steps, caution: base.caution, similar, incident,
   };

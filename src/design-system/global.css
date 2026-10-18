@@ -549,7 +549,7 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
 .tp-steps input, .tp-apply input { accent-color: var(--text-primary); width: 15px; height: 15px; margin-top: 2px; flex: none; }
 .tp-steps input:checked + span { color: var(--text-muted); text-decoration: line-through; }
 .tp-apply { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border-strong); color: var(--text-muted); }
-.tp-facts { display: grid; grid-template-columns: 92px 1fr; gap: 10px 14px; margin: 0; font-size: 13px; }
+.tp-facts { display: grid; grid-template-columns: 112px 1fr; gap: 10px 14px; margin: 0; font-size: 13px; }
 .tp-facts dt { color: var(--text-muted); }
 .tp-facts dd { margin: 0; color: var(--text-secondary); overflow-wrap: anywhere; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .link-btn { all: unset; cursor: pointer; color: var(--accent-blue-text); text-decoration: underline; text-underline-offset: 3px; }

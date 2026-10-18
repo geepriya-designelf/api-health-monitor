@@ -14,10 +14,10 @@ import { needsTriage } from '../data/triage';
 
 const nav: { to: string; label: string; icon: IconName; hint: string }[] = [
   { to: '/', label: 'Overview', icon: 'overview', hint: 'Health at a glance' },
-  { to: '/activity', label: 'API activity', icon: 'activity', hint: 'Triage failed requests' },
-  { to: '/webhooks', label: 'Webhooks', icon: 'webhook', hint: 'Delivery to customer endpoints' },
-  { to: '/alerts', label: 'Alerts', icon: 'bell', hint: 'Thresholds and notifications' },
-  { to: '/integration', label: 'Integration', icon: 'plug', hint: 'Keys, limits and endpoints' },
+  { to: '/activity', label: 'API activity', icon: 'activity', hint: 'Fix failed requests' },
+  { to: '/webhooks', label: 'Webhooks', icon: 'webhook', hint: 'Customer event delivery' },
+  { to: '/alerts', label: 'Alerts', icon: 'bell', hint: 'Rules and notifications' },
+  { to: '/integration', label: 'Integration', icon: 'plug', hint: 'Keys, rate limits, endpoints' },
 ];
 
 export function AppShell({ title, children }: { title: string; children: ReactNode }) {
@@ -32,9 +32,9 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
   const critical = serviceHealth(s.scope).filter((h) => h.status === 'critical').length;
   const firing = dataset.alerts.filter((a) => a.enabled && a.state === 'triggered' && (s.customerId === 'all' || a.customerId === s.customerId)).length;
   const badges: Record<string, { n: number; tone: string; label: string } | undefined> = {
-    '/': critical ? { n: critical, tone: 'error', label: `${critical} critical ${critical === 1 ? 'service' : 'services'}` } : undefined,
+    '/': critical ? { n: critical, tone: 'error', label: `${critical} disrupted ${critical === 1 ? 'API' : 'APIs'}` } : undefined,
     '/activity': openTriage ? { n: openTriage, tone: 'warning', label: `${openTriage} ${openTriage === 1 ? 'request needs' : 'requests need'} triage` } : undefined,
-    '/alerts': firing ? { n: firing, tone: 'error', label: `${firing} ${firing === 1 ? 'alert' : 'alerts'} firing` } : undefined,
+    '/alerts': firing ? { n: firing, tone: 'error', label: `${firing} ${firing === 1 ? 'alert' : 'alerts'} triggered` } : undefined,
   };
   return (
     <div className={`app${collapsed ? ' is-collapsed' : ''}`}>

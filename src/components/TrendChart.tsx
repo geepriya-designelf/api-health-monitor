@@ -10,10 +10,10 @@ function Tip({ active, payload }: { active?: boolean; payload?: { payload: Trend
   return (
     <div className="chart-tooltip">
       <b>{p.label} UTC</b>
-      <div>P99 latency: {fmtMs(p.p99)}</div>
-      <div>P95 latency: {fmtMs(p.p95)}</div>
-      <div>P50 latency: {fmtMs(p.p50)}</div>
-      <div>Error rate: {fmtPct(p.errorRate)} ({p.failed}/{p.requests})</div>
+      <div>P99 response time: {fmtMs(p.p99)}</div>
+      <div>P95 response time: {fmtMs(p.p95)}</div>
+      <div>Median response time: {fmtMs(p.p50)}</div>
+      <div>Failed: {fmtPct(p.errorRate)} ({p.failed} of {p.requests} requests)</div>
     </div>
   );
 }
@@ -28,12 +28,12 @@ export function TrendChart({ data, title, height = 220, targetMs, show = ['p99',
   return (
     <figure style={{ margin: 0 }}>
       <div className="chart-legend" aria-hidden="true">
-        {show.includes('p99') && <span><i className="dotted" style={{ color: 'var(--chart-5)' }} />P99 (ms)</span>}
-        {show.includes('p95') && <span><i style={{ background: 'var(--chart-1)' }} />P95 (ms)</span>}
-        {show.includes('p50') && <span style={{ color: 'var(--chart-2)' }}><i className="dashed" />P50 (ms)</span>}
-        {show.includes('errors') && <span><i style={{ background: 'var(--chart-4)', height: 8, width: 8 }} />Error rate (%)</span>}
-        <span className="legend-note">Lines exclude 30 s timeouts{show.includes('p99') && thin ? ' · P99 overlaps P95 below ~20 requests per interval' : ''}</span>
-        {targetMs && <span style={{ color: 'var(--text-secondary)' }}><i className="dashed" />P95 target {targetMs} ms</span>}
+        {show.includes('p99') && <span><i className="dotted" style={{ color: 'var(--chart-5)' }} />P99</span>}
+        {show.includes('p95') && <span><i style={{ background: 'var(--chart-1)' }} />P95</span>}
+        {show.includes('p50') && <span style={{ color: 'var(--chart-2)' }}><i className="dashed" />Median</span>}
+        {show.includes('errors') && <span><i style={{ background: 'var(--chart-4)', height: 8, width: 8 }} />Failed requests (%)</span>}
+        <span className="legend-note">Response times exclude 30 s timeouts{show.includes('p99') && thin ? ' · P99 matches P95 when traffic is low' : ''}</span>
+        {targetMs && <span style={{ color: 'var(--text-secondary)' }}><i className="dashed" />Target {targetMs} ms</span>}
       </div>
       <div role="img" aria-label={desc} style={{ height, marginTop: 8 }}>
         <ResponsiveContainer width="100%" height="100%">
@@ -56,7 +56,7 @@ export function TrendChart({ data, title, height = 220, targetMs, show = ['p99',
         <div className="table-wrap" style={{ maxHeight: 220, marginTop: 8 }}>
           <table className="data">
             <caption className="sr-only">{title}</caption>
-            <thead><tr><th scope="col">Interval end (UTC)</th><th scope="col" className="num">Requests</th><th scope="col" className="num">Failed</th><th scope="col" className="num">Error rate</th><th scope="col" className="num">P50</th><th scope="col" className="num">P95</th><th scope="col" className="num">P99</th></tr></thead>
+            <thead><tr><th scope="col">Time (UTC)</th><th scope="col" className="num">Requests</th><th scope="col" className="num">Failed</th><th scope="col" className="num">Failed (%)</th><th scope="col" className="num">Median</th><th scope="col" className="num">P95</th><th scope="col" className="num">P99</th></tr></thead>
             <tbody>{data.map((p) => <tr key={p.t}><td>{p.label}</td><td className="num">{p.requests}</td><td className="num">{p.failed}</td><td className="num">{fmtPct(p.errorRate)}</td><td className="num">{fmtMs(p.p50)}</td><td className="num">{fmtMs(p.p95)}</td><td className="num">{fmtMs(p.p99)}</td></tr>)}</tbody>
           </table>
         </div>

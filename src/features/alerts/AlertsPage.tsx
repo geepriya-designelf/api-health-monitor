@@ -8,7 +8,7 @@ import type { AlertConfig } from '../../data/types';
 import { fmtDateTime } from '../../utils/format';
 
 const STATE: Record<AlertConfig['state'], { tone: string; label: string }> = {
-  triggered: { tone: 'critical', label: 'Firing' }, recovered: { tone: 'success', label: 'Recovered' }, ok: { tone: 'success', label: 'OK' }, disabled: { tone: 'unknown', label: 'Disabled' },
+  triggered: { tone: 'critical', label: 'Triggered' }, recovered: { tone: 'success', label: 'Resolved' }, ok: { tone: 'success', label: 'Normal' }, disabled: { tone: 'unknown', label: 'Off' },
 };
 const DEST: Record<string, string> = { slack_simulated: 'Slack', email_simulated: 'Email', pagerduty_simulated: 'PagerDuty' };
 const METRIC: Record<AlertConfig['metric'], string> = { error_rate: 'Error rate', p95_latency: 'P95 latency', webhook_success_rate: 'Webhook delivery', error_count: 'Error count', payout_failures: 'Payout failures' };
@@ -16,9 +16,9 @@ const svcName = (id: string) => (id === 'all' ? 'All services' : dataset.service
 
 // Each alert says what happened, what is affected and the next best action.
 function impact(a: AlertConfig) {
-  if (a.metric === 'webhook_success_rate') return { what: 'Customer may miss payout status updates', next: 'Check the delivery log', to: '/webhooks' };
-  if (a.metric === 'p95_latency') return { what: `Slower ${svcName(a.service)} responses for end users`, next: 'Inspect slow requests', to: '/activity' };
-  return { what: `${svcName(a.service)} requests failing for this customer`, next: 'Triage failed requests', to: '/activity' };
+  if (a.metric === 'webhook_success_rate') return { what: 'The customer may miss payout status updates', next: 'Open the webhook delivery log', to: '/webhooks' };
+  if (a.metric === 'p95_latency') return { what: `Slower ${svcName(a.service)} API responses for the customer's users`, next: 'Review slow requests', to: '/activity' };
+  return { what: `${svcName(a.service)} API requests are failing for this customer`, next: 'Review failed requests', to: '/activity' };
 }
 
 export function AlertsPage() {
@@ -32,12 +32,12 @@ export function AlertsPage() {
   return (
     <section className="panel" aria-labelledby="al-h">
       <div className="panel-header">
-        <div><h2 id="al-h">Alert rules</h2><p>Firing alerts first. Notifications are simulated; nothing is sent.</p></div>
+        <div><h2 id="al-h">Alert rules</h2><p>Triggered alerts first. Notifications are simulated in this prototype; nothing is sent.</p></div>
       </div>
       {shown.length === 0 ? <p className="empty-cell">No alert rules for this customer yet.</p> : (
         <div className="table-wrap">
           <table className="data">
-            <caption className="sr-only">Alert rules, firing first</caption>
+            <caption className="sr-only">Alert rules, triggered first</caption>
             <thead><tr><th scope="col">State</th><th scope="col">Rule</th><th scope="col">Severity</th><th scope="col">Impact and next action</th><th scope="col">Condition</th><th scope="col">Notifies</th><th scope="col">Last fired</th><th scope="col">Enabled</th></tr></thead>
             <tbody>
               {shown.map((a) => {
@@ -47,7 +47,7 @@ export function AlertsPage() {
                     <td><span className={`badge tone-${STATE[a.state].tone}`}>{a.state === 'triggered' ? <Icon name="alert" size={12} /> : a.state === 'disabled' ? <Icon name="close" size={12} /> : <Icon name="check" size={12} />}{STATE[a.state].label}</span></td>
                     <td>
                       <b>{a.name}</b><div className="muted" style={{ fontSize: 12 }}>{cust(a.customerId)} · {a.environment === 'sandbox' ? 'Sandbox' : 'Production'}</div>
-                      {a.triggerCount24h >= 3 && <div className="noisy"><Icon name="bell" size={12} />Fired {a.triggerCount24h}× in 24h. Review the threshold to avoid alert fatigue.</div>}
+                      {a.triggerCount24h >= 3 && <div className="noisy"><Icon name="bell" size={12} />Triggered {a.triggerCount24h} times in 24 hours. Consider adjusting the threshold to reduce noise.</div>}
                     </td>
                     <td><span className={`badge tone-${a.severity === 'critical' ? 'critical' : a.severity === 'warning' ? 'warning' : 'info'}`}>{a.severity}</span></td>
                     <td className="alert-impact">{im.what}<br /><Link to={im.to}>{im.next} →</Link></td>
@@ -68,7 +68,7 @@ export function AlertsPage() {
         </div>
       )}
       <ConfirmDialog open={!!pending} title={`Disable "${pending?.name}"?`}
-        body={`This is a ${pending?.severity} alert. While it is off, nobody will be told if ${pending ? svcName(pending.service) : ''} degrades for ${pending ? cust(pending.customerId) : ''}. You can turn it back on at any time.`}
+        body={`This is a ${pending?.severity} alert. While it is off, no one will be notified if the ${pending ? svcName(pending.service) : ''} API degrades for ${pending ? cust(pending.customerId) : ''}. You can turn it back on at any time.`}
         confirmLabel="Disable alert" onCancel={() => setPending(null)} onConfirm={() => { if (pending) setEnabled(pending.alertId, false); setPending(null); }} />
     </section>
   );

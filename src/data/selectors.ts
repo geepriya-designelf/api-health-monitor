@@ -4,7 +4,7 @@ import { ANCHOR_MS, dataset } from './repository';
 import type { ApiRequest, Environment, HealthStatus, MetricPoint, ServiceId, TelemetrySource, TimeRange, WebhookDelivery } from './types';
 
 export const RANGE_HOURS: Record<TimeRange, number> = { '90m': 1.5, '3h': 3, '8h': 8, '24h': 24 };
-export const RANGE_LABEL: Record<TimeRange, string> = { '90m': '90 min', '3h': '3 hrs', '8h': '8 hrs', '24h': '24 hrs' };
+export const RANGE_LABEL: Record<TimeRange, string> = { '90m': '90 min', '3h': '3 hours', '8h': '8 hours', '24h': '24 hours' };
 const DISPLAY_BUCKET_MIN: Record<TimeRange, number> = { '90m': 5, '3h': 10, '8h': 30, '24h': 60 };
 export const bucketLabel = (r: TimeRange) => `${DISPLAY_BUCKET_MIN[r]} min`;
 export const SLOW_MS = 1000;
@@ -108,16 +108,17 @@ export function telemetryFor(customerId: string, environment: Environment, servi
   return dataset.telemetrySources.find((t) => t.customerId === customerId && t.environment === environment && t.service === service);
 }
 
+export type HealthCause = 'failures' | 'latency' | 'rejections' | 'no_data' | 'stale' | 'no_traffic' | 'none';
 export interface ServiceHealth {
-  service: ServiceId; name: string; status: HealthStatus; reason: string; summary: Summary;
+  service: ServiceId; name: string; status: HealthStatus; cause: HealthCause; reason: string; summary: Summary;
   telemetry: TelemetrySource | undefined; p95TargetMs: number;
 }
 // Health rules (prototype assumptions):
-//   unknown  – telemetry missing or stale, or no requests in range (never shown as healthy)
-//   critical – server-side failure rate (5xx + timeouts) ≥ 5%, or P95 ≥ 2× target
-//   degraded – server-side failure rate ≥ 1%, client error rate (4xx) ≥ 10%, or P95 > target
-//   healthy  – otherwise
-// 4xx responses usually mean the integration sent a bad request, so they degrade but never make a service critical.
+//   unknown  – no data received, data delayed, or no requests in range (never shown as operational)
+//   critical – server-side failure rate (5xx + timeouts) ≥ 5%, or P95 ≥ 2× target          → "Disrupted"
+//   degraded – server-side failure rate ≥ 1%, rejected (4xx) ≥ 10%, or P95 above target    → "Degraded"
+//   healthy  – otherwise                                                                   → "Operational"
+// 4xx responses usually mean the integration sent a bad request, so they degrade but never disrupt a service.
 export function serviceHealth(s: Scope): ServiceHealth[] {
   return dataset.services.map((svc) => {
     const telemetry = telemetryFor(s.customerId, s.environment, svc.id);
@@ -125,18 +126,24 @@ export function serviceHealth(s: Scope): ServiceHealth[] {
     const srv = summary.serverSideRate ?? 0;
     const cli = summary.clientErrorRate ?? 0;
     const p95 = summary.p95 ?? 0;
+    const target = svc.p95TargetMs;
     let status: HealthStatus = 'healthy';
-    let reason = 'Within targets';
-    if (!telemetry || telemetry.status === 'missing') { status = 'unknown'; reason = 'Telemetry missing'; }
-    else if (telemetry.status === 'stale') { status = 'unknown'; reason = 'Telemetry stale'; }
-    else if (summary.total === 0) { status = 'unknown'; reason = 'No requests in range'; }
-    else if (srv >= 5 || p95 >= svc.p95TargetMs * 2) {
-      status = 'critical'; reason = srv >= 5 ? `${srv.toFixed(1)}% server errors and timeouts` : `P95 ${p95} ms, over 2× the ${svc.p95TargetMs} ms target`;
-    } else if (srv >= 1 || cli >= 10 || p95 > svc.p95TargetMs) {
+    let cause: HealthCause = 'none';
+    let reason = `${(summary.errorRate ?? 0).toFixed(1)}% failed · P95 ${p95.toLocaleString('en-US')} ms`;
+    if (!telemetry || telemetry.status === 'missing') { status = 'unknown'; cause = 'no_data'; reason = 'No data received from this API'; }
+    else if (telemetry.status === 'stale') { status = 'unknown'; cause = 'stale'; reason = 'Data delayed'; }
+    else if (summary.total === 0) { status = 'unknown'; cause = 'no_traffic'; reason = 'No requests in this period'; }
+    else if (srv >= 5 || p95 >= target * 2) {
+      status = 'critical';
+      if (srv >= 5) { cause = 'failures'; reason = `${srv.toFixed(1)}% of requests failing`; }
+      else { cause = 'latency'; reason = `P95 ${p95.toLocaleString('en-US')} ms, over 2× the ${target} ms target`; }
+    } else if (srv >= 1 || cli >= 10 || p95 > target) {
       status = 'degraded';
-      reason = srv >= 1 ? `${srv.toFixed(1)}% server errors and timeouts` : cli >= 10 ? `${cli.toFixed(1)}% client errors (4xx)` : `P95 ${p95} ms over ${svc.p95TargetMs} ms target`;
+      if (srv >= 1) { cause = 'failures'; reason = `${srv.toFixed(1)}% of requests failing`; }
+      else if (cli >= 10) { cause = 'rejections'; reason = `${cli.toFixed(1)}% of requests rejected (4xx)`; }
+      else { cause = 'latency'; reason = `P95 ${p95.toLocaleString('en-US')} ms, above the ${target} ms target`; }
     }
-    return { service: svc.id, name: svc.name, status, reason, summary, telemetry, p95TargetMs: svc.p95TargetMs };
+    return { service: svc.id, name: svc.name, status, cause, reason, summary, telemetry, p95TargetMs: target };
   });
 }
 

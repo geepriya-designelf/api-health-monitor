@@ -8,11 +8,16 @@ import { TrendChart } from '../../components/TrendChart';
 import { ANCHOR_MS, dataset } from '../../data/repository';
 import { RANGE_LABEL, bucketLabel, endpointBreakdown, overallStatus, scopedWebhooks, serviceHealth, summarizeScope, trend, webhookStatus, webhookSummary } from '../../data/selectors';
 import type { HealthStatus } from '../../data/types';
+import type { HealthCause, ServiceHealth } from '../../data/selectors';
 import { fmtAgo, fmtInt, fmtMs, fmtPct, fmtTime } from '../../utils/format';
 import { ActivityTable } from '../activity/ActivityTable';
 
 const VERDICT_ICON: Record<HealthStatus, 'x' | 'alert' | 'check' | 'question'> = { critical: 'x', degraded: 'alert', healthy: 'check', unknown: 'question' };
-const STATUS_WORD: Record<HealthStatus, string> = { healthy: 'Healthy', degraded: 'Degraded', critical: 'Critical', unknown: 'No data' };
+// Status vocabulary borrowed from payment-platform status pages.
+const STATUS_WORD: Record<HealthStatus, string> = { healthy: 'Operational', degraded: 'Degraded', critical: 'Disrupted', unknown: 'No data' };
+const EVENT_NAME: Record<string, string> = { INITIATED: 'Payout initiated', PAID: 'Payout paid', FAILED: 'Payout failed', RETURNED: 'Payout returned' };
+export const eventName = (template: string) => EVENT_NAME[template.replace('REMIT_TRANSACTION_', '').replace('_WEBHOOK', '')] ?? template;
+const ACTION: Record<HealthCause, string> = { failures: 'Review failed', latency: 'Review slow', rejections: 'Review rejected', no_data: 'Review', stale: 'Review', no_traffic: 'Review', none: 'Review' };
 
 export function OverviewPage() {
   const s = useScopeContext();
@@ -27,29 +32,38 @@ export function OverviewPage() {
     .sort((a, b) => Number(b.status === 'critical') - Number(a.status === 'critical'));
   const lead = flagged[0];
   const others = flagged.slice(1);
-  const leadFailed = lead ? lead.summary.failed : 0;
   const latestFail = [...hooks].reverse().find((w) => w.deliveryStatus === 'failed');
+  const period = `the last ${RANGE_LABEL[s.range]}`;
+  // One sentence that says what is wrong, how big it is, and against what.
+  const detail = (h: ServiceHealth) => {
+    const { total, failed, p95, serverErrors, timeouts, serverSideRate } = h.summary;
+    const share = `${fmtInt(failed)} of ${fmtInt(total)} ${h.name} API requests failed in ${period}`;
+    if (h.cause === 'failures') return `${fmtInt(serverErrors + timeouts)} of ${fmtInt(total)} ${h.name} API requests failed in ${period} (${fmtPct(serverSideRate)}) on server errors and timeouts.`;
+    if (h.cause === 'rejections') return `${share}, most rejected as invalid (4xx). This usually points to the customer's request payloads.`;
+    if (h.cause === 'latency') return `Responses are ${(p95 ?? 0) >= h.p95TargetMs * 2 ? 'more than twice as slow as' : 'slower than'} target: P95 ${fmtMs(p95)} against ${h.p95TargetMs} ms. ${failed ? `${share}.` : `No failed requests in ${period}.`}`;
+    return h.reason;
+  };
 
   return (
     <div className="overview">
-      <section className={`verdict v-${status}`} aria-label="Integration verdict">
+      <section className={`verdict v-${status}`} aria-label="Service health summary">
         <span className="verdict-icon" aria-hidden="true"><Icon name={VERDICT_ICON[status]} size={20} /></span>
         <div className="verdict-body" role="status">
-          <p className="verdict-eyebrow">{status === 'unknown' ? 'Health unknown' : `Integration ${STATUS_WORD[status].toLowerCase()}`}</p>
+          <p className="verdict-eyebrow">Service health {STATUS_WORD[status].toLowerCase()}</p>
           <h2 className="verdict-title">
-            {sum.total === 0 ? 'No API traffic in this range'
-              : lead ? `${lead.name} is ${STATUS_WORD[lead.status].toLowerCase()}`
-                : 'All services are within targets'}
+            {sum.total === 0 ? 'No API traffic in this period'
+              : lead ? `${lead.name} API is ${STATUS_WORD[lead.status].toLowerCase()}`
+                : 'All APIs are operational'}
           </h2>
           <p className="verdict-detail">
-            {sum.total === 0 ? 'Health cannot be confirmed until requests arrive. Check the customer is sending traffic to this environment.'
-              : lead ? `${lead.reason}${leadFailed ? ` · ${fmtInt(leadFailed)} failed ${lead.name} ${leadFailed === 1 ? 'request' : 'requests'} in the last ${RANGE_LABEL[s.range]}` : ''}`
-                : `${fmtInt(sum.total)} requests in the last ${RANGE_LABEL[s.range]}, ${fmtPct(sum.successRate, 2)} successful.`}
+            {sum.total === 0 ? "We can't confirm health until requests arrive. Check that the customer is sending traffic to this environment."
+              : lead ? detail(lead)
+                : `${fmtInt(sum.total)} requests in ${period}, ${fmtPct(sum.successRate, 2)} succeeded.`}
           </p>
           {others.length > 0 && (
             <ul className="verdict-others" aria-label="Also affected">
               {others.map((h) => (
-                <li key={h.service}><span className={`dot dot-${h.status}`} aria-hidden="true" /><span><b>{h.name}</b> {STATUS_WORD[h.status].toLowerCase()}<span className="muted"> · {h.reason}</span></span></li>
+                <li key={h.service}><span className={`dot dot-${h.status}`} aria-hidden="true" /><span><b>{h.name} API</b> {STATUS_WORD[h.status].toLowerCase()}<span className="muted"> · {h.reason}</span></span></li>
               ))}
             </ul>
           )}
@@ -58,22 +72,22 @@ export function OverviewPage() {
           <button type="button" className="btn btn-primary verdict-action" onClick={() => {
             s.setService(lead.service);
             document.getElementById('ov-activity')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}>Investigate {lead.name}<Icon name="arrow" size={14} /></button>
+          }}>{ACTION[lead.cause]} {lead.name} requests<Icon name="arrow" size={14} /></button>
         )}
       </section>
 
       <section aria-label="Key metrics" className="kpis">
-        <div className="kpi"><span className="kpi-label">API calls<InfoTip term="API calls">Every request this customer sent to Nium in the selected environment and time range, successful or not.</InfoTip></span><span className="kpi-value">{fmtInt(sum.total)}</span><span className="kpi-sub">last {RANGE_LABEL[s.range]}</span></div>
-        <div className="kpi"><span className="kpi-label">P95 latency<InfoTip term="P95 latency">95% of requests finished faster than this. It shows the slow tail that customers feel, which an average hides.</InfoTip></span><span className="kpi-value">{fmtMs(sum.p95)}</span><span className="kpi-sub">P50 {fmtMs(sum.p50)} · P90 {fmtMs(sum.p90)} · P99 {fmtMs(sum.p99)}</span></div>
+        <div className="kpi"><span className="kpi-label">API requests<InfoTip term="API requests">Every request this customer sent to Nium in this environment and period, whether it succeeded or not.</InfoTip></span><span className="kpi-value">{fmtInt(sum.total)}</span><span className="kpi-sub">in {period}</span></div>
+        <div className="kpi"><span className="kpi-label">Response time (P95)<InfoTip term="Response time (P95)">95% of requests completed faster than this. It reflects the slow experiences that an average would hide.</InfoTip></span><span className="kpi-value">{fmtMs(sum.p95)}</span><span className="kpi-sub">Median {fmtMs(sum.p50)} · P99 {fmtMs(sum.p99)}</span></div>
         <div className="kpi">
-          <span className="kpi-label">Success rate<InfoTip term="Success rate">Share of requests that returned a 2xx response. Timeouts count as unsuccessful because their outcome is unknown.</InfoTip></span>
+          <span className="kpi-label">Success rate<InfoTip term="Success rate">Share of requests that returned a 2xx response. Timed-out requests count as unsuccessful because their outcome is unknown.</InfoTip></span>
           <span className="kpi-value" style={{ color: (sum.successRate ?? 100) < 95 ? 'var(--status-error)' : (sum.successRate ?? 100) < 98 ? 'var(--status-warning)' : undefined }}>{fmtPct(sum.successRate, 2)}</span>
-          <span className="kpi-sub">{fmtInt(sum.total - sum.failed)} of {fmtInt(sum.total)} · {sum.failed} failed</span>
+          <span className="kpi-sub">{fmtInt(sum.total - sum.failed)} of {fmtInt(sum.total)} succeeded · {fmtInt(sum.failed)} failed</span>
         </div>
         <div className="kpi">
-          <span className="kpi-label">Slowest endpoint<InfoTip term="Slowest endpoint">The endpoint with the highest P95 latency in this range. Timeouts are included, so one 30 second timeout can put an endpoint here.</InfoTip></span>
+          <span className="kpi-label">Slowest endpoint<InfoTip term="Slowest endpoint">The endpoint with the highest P95 response time in this period. Timeouts are included, so a single 30-second timeout can put an endpoint here.</InfoTip></span>
           <span className="kpi-value kpi-text">{slowest?.endpoint.name ?? '—'}</span>
-          <span className="kpi-sub">{slowest ? `P95 ${fmtMs(slowest.p95)} · ${dataset.services.find((x) => x.id === slowest.endpoint.service)?.name}` : 'No requests'}</span>
+          <span className="kpi-sub">{slowest ? `P95 ${fmtMs(slowest.p95)} · ${dataset.services.find((x) => x.id === slowest.endpoint.service)?.name} API` : 'No requests in this period'}</span>
         </div>
       </section>
 
@@ -85,11 +99,11 @@ export function OverviewPage() {
               <li key={h.service}>
                 <button type="button" className={`svc-row${s.service === h.service ? ' is-selected' : ''}`} aria-pressed={s.service === h.service}
                   onClick={() => s.setService(s.service === h.service ? null : h.service)}
-                  aria-label={`${h.name}: ${STATUS_WORD[h.status]}. ${h.reason}. ${s.service === h.service ? 'Clear filter' : 'Filter activity'}`}>
+                  aria-label={`${h.name} API: ${STATUS_WORD[h.status]}. ${h.reason}. ${s.service === h.service ? 'Show all APIs' : 'Show only this API'}`}>
                   <span className={`dot dot-${h.status}`} aria-hidden="true" />
-                  <span className="svc-row-name">{h.name === 'Payments' ? 'Payments (pay-ins)' : h.name}</span>
+                  <span className="svc-row-name">{h.name} API</span>
                   <span className={`svc-row-status st-${h.status}`}>{STATUS_WORD[h.status]}</span>
-                  <span className="svc-row-reason">{h.status === 'healthy' ? `${fmtPct(h.summary.errorRate)} errors · P95 ${fmtMs(h.summary.p95)}` : h.telemetry?.status !== 'live' && h.telemetry ? `${h.reason} · last event ${fmtAgo(h.telemetry.lastEventAt, ANCHOR_MS)}` : h.reason}</span>
+                  <span className="svc-row-reason">{h.cause === 'stale' ? `${h.reason} · last received ${fmtAgo(h.telemetry?.lastEventAt ?? null, ANCHOR_MS)}` : h.reason}</span>
                 </button>
               </li>
             ))}
@@ -97,14 +111,14 @@ export function OverviewPage() {
         </section>
         <section aria-labelledby="ov-perf" className="panel">
           <div className="panel-header">
-            <h2 id="ov-perf">API performance{s.service ? ` · ${dataset.services.find((x) => x.id === s.service)?.name}` : ''}</h2>
-            <span className="freshness">Data as of {new Date(ANCHOR_MS).toISOString().slice(11, 16)} UTC · {bucketLabel(s.range)} intervals</span>
+            <h2 id="ov-perf">Response time and failures{s.service ? ` · ${dataset.services.find((x) => x.id === s.service)?.name} API` : ''}</h2>
+            <span className="freshness">Updated {new Date(ANCHOR_MS).toISOString().slice(11, 16)} UTC · {bucketLabel(s.range)} intervals</span>
           </div>
-          <TrendChart data={trend(s.scope, s.service)} title={`API latency and error rate, last ${RANGE_LABEL[s.range]}`} height={170}
+          <TrendChart data={trend(s.scope, s.service)} title={`Response time and failed requests, ${period}`} height={170}
             targetMs={s.service ? dataset.services.find((x) => x.id === s.service)?.p95TargetMs : undefined} />
         </section>
         <section aria-labelledby="ov-wh" className="panel">
-          <div className="panel-header"><h2 id="ov-wh">Webhooks</h2><HealthBadge status={whStatus} label={whStatus === 'unknown' ? 'No events' : undefined} /></div>
+          <div className="panel-header"><h2 id="ov-wh">Webhook delivery</h2><HealthBadge status={whStatus} label={whStatus === 'unknown' ? 'No events' : undefined} /></div>
           <div className="wh-big">{fmtPct(wh.successRate)}<span>delivered</span></div>
           {wh.total > 0 && (
             <div className="meter" role="img" aria-label={`${wh.delivered} delivered, ${wh.delayed} delayed, ${wh.failed} failed`}>
@@ -114,13 +128,13 @@ export function OverviewPage() {
             </div>
           )}
           <div className="wh-split">
-            <span><b>{wh.delivered}</b> delivered</span>
-            <span className={wh.delayed ? 'warn' : ''}><b>{wh.delayed}</b> delayed</span>
-            <span className={wh.failed ? 'err' : ''}><b>{wh.failed}</b> failed</span>
+            <span><b>{fmtInt(wh.delivered)}</b> delivered</span>
+            <span className={wh.delayed ? 'warn' : ''}><b>{fmtInt(wh.delayed)}</b> delayed</span>
+            <span className={wh.failed ? 'err' : ''}><b>{fmtInt(wh.failed)}</b> failed</span>
           </div>
           {latestFail ? (
-            <p className="wh-last">Last failure {fmtTime(latestFail.timestamp)} · <span className="mono">{latestFail.template.replace('REMIT_TRANSACTION_', '').replace('_WEBHOOK', '')}</span> · HTTP {latestFail.responseStatus}</p>
-          ) : <p className="wh-last muted">No failed deliveries in range.</p>}
+            <p className="wh-last">Last failed: <b>{eventName(latestFail.template)}</b> event at {fmtTime(latestFail.timestamp)}. The customer's endpoint returned HTTP {latestFail.responseStatus}.</p>
+          ) : <p className="wh-last muted">No failed deliveries in this period.</p>}
           <Link to="/webhooks" className="link-more">View delivery log<Icon name="arrow" size={12} /></Link>
         </section>
       </div>

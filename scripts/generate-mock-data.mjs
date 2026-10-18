@@ -54,10 +54,10 @@ const iso = (ms) => new Date(ms).toISOString().replace('.000Z', 'Z');
 //   "illustrative" – placeholder for the prototype; not a claimed Nium endpoint
 // ---------------------------------------------------------------------------
 const services = [
-  { id: 'payments', name: 'Payments', p95TargetMs: 600, description: 'Pay-ins and payment collection' },
-  { id: 'payouts', name: 'Payouts', p95TargetMs: 600, description: 'Transfer money to beneficiaries' },
-  { id: 'fx', name: 'FX', p95TargetMs: 500, description: 'Quotes and currency conversions' },
-  { id: 'wallets', name: 'Wallets', p95TargetMs: 400, description: 'Wallet balances, funding and transactions' },
+  { id: 'payments', name: 'Pay-ins', p95TargetMs: 600, description: 'Collecting payments from payers' },
+  { id: 'payouts', name: 'Payouts', p95TargetMs: 600, description: 'Sending money to beneficiaries' },
+  { id: 'fx', name: 'FX', p95TargetMs: 500, description: 'Currency quotes and conversions' },
+  { id: 'wallets', name: 'Wallets', p95TargetMs: 400, description: 'Balances, funding and wallet transactions' },
 ];
 
 const W = '/api/v1/client/{clientHashId}/customer/{customerHashId}/wallet/{walletHashId}';

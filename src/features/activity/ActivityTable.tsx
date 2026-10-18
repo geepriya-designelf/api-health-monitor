@@ -87,7 +87,7 @@ export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
         <div className="search">
           <span aria-hidden="true"><Icon name="search" size={14} /></span>
           <input ref={searchRef} className="input" type="search" value={q} onChange={(e) => { setQ(e.target.value); reset(); }}
-            placeholder="Search trace ID, x-request-id, endpoint, error code" aria-label="Search API activity" aria-keyshortcuts="/" />
+            placeholder="Search by trace ID, request ID, endpoint or error code" aria-label="Search API requests" aria-keyshortcuts="/" />
           <kbd className="search-kbd" aria-hidden="true">/</kbd>
         </div>
         <label className="sr-only" htmlFor="svc-filter">Service</label>
@@ -97,13 +97,13 @@ export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
         </select>
         <button type="button" className={`toggle-btn${errorsOnly ? ' is-on' : ''}`} aria-pressed={errorsOnly} onClick={() => { setErrorsOnly(!errorsOnly); reset(); }}>
           <span className="toggle-box" aria-hidden="true">{errorsOnly && <Icon name="check" size={12} />}</span>
-          Show API errors only<span className="toggle-count">{apiErrorCount.toLocaleString('en-US')}</span>
+          Failed requests only<span className="toggle-count">{apiErrorCount.toLocaleString('en-US')}</span>
         </button>
-        <span className="muted result-count" role="status" aria-live="polite">{filtered.length.toLocaleString('en-US')} shown</span>
+        <span className="muted result-count" role="status" aria-live="polite">Showing {filtered.length.toLocaleString('en-US')}</span>
       </div>
 
       <p className="retention-note">
-        <b>{totals.total.toLocaleString('en-US')}</b> requests in this range. The log below keeps every failed and slow request, plus a {SAMPLE_RATE * 100}% sample of successful ones.
+        <b>{totals.total.toLocaleString('en-US')}</b> requests in this period. This log keeps every failed and slow request, plus a {SAMPLE_RATE * 100}% sample of successful ones.
       </p>
       <div className="table-wrap activity-table" ref={wrapRef} tabIndex={0} role="region" aria-label="API activity table, scrollable" style={{ ['--wrap-w' as string]: wrapW ? `${wrapW}px` : '100%' }}>
         <table className="data">
@@ -114,24 +114,24 @@ export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
               {th('timestamp', 'Time')}
               <th scope="col">Trace ID</th>
               <th scope="col">Endpoint</th>
-              <th scope="col">Service</th>
-              {th('httpStatus', 'Status')}
+              <th scope="col">API</th>
+              {th('httpStatus', 'HTTP')}
               <th scope="col" className="th-filter">
                 <span>Error</span>
                 <label className="sr-only" htmlFor="err-filter">Filter by error</label>
                 <select id="err-filter" className={`th-select${errorCode ? ' is-active' : ''}`} value={errorCode} onChange={(e) => { setErrorCode(e.target.value); reset(); }}>
-                  <option value="">All</option>
+                  <option value="">All errors</option>
                   {errorOptions.map(([k, n]) => <option key={k} value={k}>{k} ({n})</option>)}
                 </select>
               </th>
-              {th('latencyMs', 'Latency', 'num')}
-              <th scope="col">Outcome</th>
+              {th('latencyMs', 'Response time', 'num')}
+              <th scope="col">Result</th>
             </tr>
           </thead>
           <tbody>
             {visible.length === 0 && (
               <tr><td colSpan={9} className="empty-cell">
-                {all.length === 0 ? 'No API requests for this customer and environment in this time range.' : 'No requests match these filters.'}
+                {all.length === 0 ? 'No requests for this customer and environment in this period.' : 'No requests match your filters.'}
                 {all.length > 0 && <button type="button" className="btn btn-sm" onClick={() => { setQ(''); setErrorsOnly(false); setErrorCode(''); s.setService(null); }}>Clear filters</button>}
               </td></tr>
             )}
@@ -164,8 +164,9 @@ export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
                       <div className="outcome-cell">
                         {r.outcome === 'timeout' ? <span className="badge tone-warning"><Icon name="question" size={12} />Outcome unknown</span>
                           : asyncFail ? <span className="badge tone-critical"><Icon name="x" size={12} />Payout {r.transactionStatus?.toLowerCase()}</span>
+                            : r.outcome === 'client_error' ? <span className="badge tone-warning"><Icon name="alert" size={12} />Rejected</span>
                             : r.outcome !== 'success' ? <span className="badge tone-critical"><Icon name="x" size={12} />Failed</span>
-                              : <span className={`quiet-ok${slowOk ? ' is-slow' : ''}`}><Icon name="check" size={12} />{slowOk ? 'Slow, succeeded' : 'Success'}</span>}
+                              : <span className={`quiet-ok${slowOk ? ' is-slow' : ''}`}><Icon name="check" size={12} />{slowOk ? 'Succeeded, slow' : 'Succeeded'}</span>}
                         {issue && <span className={`triage-state ts-${t.status}`}>{STATUS_LABEL[t.status]}</span>}
                       </div>
                     </td>

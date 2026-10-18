@@ -39,27 +39,27 @@
   "services": [
     {
       "id": "payments",
-      "name": "Payments",
+      "name": "Pay-ins",
       "p95TargetMs": 600,
-      "description": "Pay-ins and payment collection"
+      "description": "Collecting payments from payers"
     },
     {
       "id": "payouts",
       "name": "Payouts",
       "p95TargetMs": 600,
-      "description": "Transfer money to beneficiaries"
+      "description": "Sending money to beneficiaries"
     },
     {
       "id": "fx",
       "name": "FX",
       "p95TargetMs": 500,
-      "description": "Quotes and currency conversions"
+      "description": "Currency quotes and conversions"
     },
     {
       "id": "wallets",
       "name": "Wallets",
       "p95TargetMs": 400,
-      "description": "Wallet balances, funding and transactions"
+      "description": "Balances, funding and wallet transactions"
     }
   ],
   "endpoints": [

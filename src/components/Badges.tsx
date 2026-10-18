@@ -2,10 +2,10 @@ import type { HealthStatus, Outcome } from '../data/types';
 import { Icon, type IconName } from './Icon';
 
 const health: Record<HealthStatus, { label: string; icon: IconName }> = {
-  healthy: { label: 'Healthy', icon: 'check' },
+  healthy: { label: 'Operational', icon: 'check' },
   degraded: { label: 'Degraded', icon: 'alert' },
-  critical: { label: 'Critical', icon: 'x' },
-  unknown: { label: 'Unknown', icon: 'question' },
+  critical: { label: 'Disrupted', icon: 'x' },
+  unknown: { label: 'No data', icon: 'question' },
 };
 // Status is always icon + text, never colour alone.
 export function HealthBadge({ status, label }: { status: HealthStatus; label?: string }) {
@@ -21,7 +21,7 @@ export function HttpStatusBadge({ status }: { status: number }) {
 }
 
 const outcomeLabel: Record<Outcome, [string, string]> = {
-  success: ['Success', 'success'], client_error: ['Client error', 'warning'], server_error: ['Server error', 'error'], timeout: ['Timeout', 'error'],
+  success: ['Succeeded', 'success'], client_error: ['Rejected', 'warning'], server_error: ['Failed', 'error'], timeout: ['Timed out', 'error'],
 };
 export function OutcomeBadge({ outcome }: { outcome: Outcome }) {
   const [l, t] = outcomeLabel[outcome];

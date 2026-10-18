@@ -26,7 +26,7 @@ export function TriagePanel({ r, d, onShowSimilar }: { r: ApiRequest; d: Diagnos
   const targets = applySimilar ? [r.requestId, ...d.similar.map((x) => x.requestId)] : [r.requestId];
   const scopeNote = targets.length > 1 ? ` (${targets.length})` : '';
 
-  const handoff = `${handoffText(r)}\nLikely cause: ${d.likelyCause}\nSuggested owner: ${OWNER_LABEL[d.owner]}\nRelated failures (30 min): ${d.similar.length}`;
+  const handoff = `${handoffText(r)}\nLikely cause: ${d.likelyCause}\nSuggested owner: ${OWNER_LABEL[d.owner]}\nRelated failures (last 30 min): ${d.similar.length}`;
   async function escalate() {
     let copied = true;
     try { await navigator.clipboard.writeText(handoff); } catch { copied = false; }
@@ -49,7 +49,7 @@ export function TriagePanel({ r, d, onShowSimilar }: { r: ApiRequest; d: Diagnos
           </div>
           <h3 className="tp-title">{d.headline}</h3>
           <p className="tp-cause">{d.likelyCause}</p>
-          <p className="tp-owner">Suggested owner <b>{OWNER_LABEL[d.owner]}</b> · {d.confidence} confidence · rule-based suggestion</p>
+          <p className="tp-owner">Suggested owner: <b>{OWNER_LABEL[d.owner]}</b> · {d.confidence[0].toUpperCase() + d.confidence.slice(1)} confidence · Automated suggestion, confirm with the trace</p>
           {rec.note && <p className="tp-owner">Latest: {rec.note}</p>}
         </div>
         {!resolving && (
@@ -88,7 +88,7 @@ export function TriagePanel({ r, d, onShowSimilar }: { r: ApiRequest; d: Diagnos
               ))}
             </ul>
             {d.similar.length > 0 && (
-              <label className="tp-apply"><input type="checkbox" checked={applySimilar} onChange={(e) => setApplySimilar(e.target.checked)} />Apply actions to {d.similar.length} related failures too</label>
+              <label className="tp-apply"><input type="checkbox" checked={applySimilar} onChange={(e) => setApplySimilar(e.target.checked)} />Apply to the {d.similar.length} related failures as well</label>
             )}
           </section>
         )}
@@ -96,8 +96,8 @@ export function TriagePanel({ r, d, onShowSimilar }: { r: ApiRequest; d: Diagnos
           <h4 id={`facts-${r.requestId}`} className="tp-label">Key details</h4>
           <dl className="tp-facts">
             <dt>Trace ID</dt><dd><TraceId id={r.traceId} available={r.traceAvailable} /></dd>
-            <dt>Response</dt><dd><HttpStatusBadge status={r.httpStatus} /> {fmtMs(r.latencyMs)}<span className="muted"> · target P95 {svc?.p95TargetMs} ms</span></dd>
-            <dt>Related</dt><dd>{d.similar.length ? <button type="button" className="link-btn" onClick={onShowSimilar}>{d.similar.length} more in 30 min · show in table</button> : <span className="muted">None in 30 min</span>}</dd>
+            <dt>Response</dt><dd><HttpStatusBadge status={r.httpStatus} /> {fmtMs(r.latencyMs)}<span className="muted"> · P95 target {svc?.p95TargetMs} ms</span></dd>
+            <dt>Related failures</dt><dd>{d.similar.length ? <button type="button" className="link-btn" onClick={onShowSimilar}>{d.similar.length} more in the last 30 min · Show in table</button> : <span className="muted">None in the last 30 min</span>}</dd>
             <dt>Time</dt><dd>{fmtDateTime(r.timestamp)}</dd>
           </dl>
         </section>
