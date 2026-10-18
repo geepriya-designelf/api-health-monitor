@@ -2,9 +2,9 @@ import type { HealthStatus, Outcome } from '../data/types';
 import { Icon, type IconName } from './Icon';
 
 const health: Record<HealthStatus, { label: string; icon: IconName }> = {
-  healthy: { label: 'Operational', icon: 'check' },
+  healthy: { label: 'Healthy', icon: 'check' },
   degraded: { label: 'Degraded', icon: 'alert' },
-  critical: { label: 'Disrupted', icon: 'x' },
+  critical: { label: 'Critical', icon: 'x' },
   unknown: { label: 'No data', icon: 'question' },
 };
 // Status is always icon + text, never colour alone.

@@ -505,9 +505,9 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
 .v-degraded { background: var(--bg-surface); border-color: color-mix(in srgb, var(--status-warning-fill) 70%, transparent); }
 .v-degraded .verdict-icon { background: var(--status-warning-fill); color: #000; box-shadow: 0 0 0 6px color-mix(in srgb, var(--status-warning-fill) 18%, transparent); }
 .v-degraded .verdict-eyebrow { color: var(--status-warning); }
-/* Light: yellow can't be text on white, so the eyebrow becomes a yellow pill with black text. */
+/* Light: same plain eyebrow as dark, in the darkest yellow that still clears 4.5:1 on white. */
 :root[data-theme='light'] .v-degraded { border-color: var(--status-warning-fill); }
-:root[data-theme='light'] .v-degraded .verdict-eyebrow { align-self: flex-start; color: #000; background: var(--status-warning-fill); padding: 2px 8px; border-radius: var(--radius-pill); }
+:root[data-theme='light'] .v-degraded .verdict-eyebrow { color: var(--status-warning-text); }
 .v-unknown .verdict-icon { border: 2px dashed var(--status-unknown); background: transparent; }
 .v-healthy { padding-top: var(--space-3); padding-bottom: var(--space-3); }
 .v-healthy .verdict-icon { width: 36px; height: 36px; border-radius: 10px; align-self: center; }

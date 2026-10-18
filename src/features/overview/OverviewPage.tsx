@@ -14,7 +14,7 @@ import { ActivityTable } from '../activity/ActivityTable';
 
 const VERDICT_ICON: Record<HealthStatus, 'x' | 'alert' | 'check' | 'question'> = { critical: 'x', degraded: 'alert', healthy: 'check', unknown: 'question' };
 // Status vocabulary borrowed from payment-platform status pages.
-const STATUS_WORD: Record<HealthStatus, string> = { healthy: 'Operational', degraded: 'Degraded', critical: 'Disrupted', unknown: 'No data' };
+const STATUS_WORD: Record<HealthStatus, string> = { healthy: 'Healthy', degraded: 'Degraded', critical: 'Critical', unknown: 'No data' };
 const EVENT_NAME: Record<string, string> = { INITIATED: 'Payout initiated', PAID: 'Payout paid', FAILED: 'Payout failed', RETURNED: 'Payout returned' };
 export const eventName = (template: string) => EVENT_NAME[template.replace('REMIT_TRANSACTION_', '').replace('_WEBHOOK', '')] ?? template;
 const ACTION: Record<HealthCause, string> = { failures: 'Review failed', latency: 'Review slow', rejections: 'Review rejected', no_data: 'Review', stale: 'Review', no_traffic: 'Review', none: 'Review' };
@@ -53,7 +53,7 @@ export function OverviewPage() {
           <h2 className="verdict-title">
             {sum.total === 0 ? 'No API traffic in this period'
               : lead ? `${lead.name} API is ${STATUS_WORD[lead.status].toLowerCase()}`
-                : 'All APIs are operational'}
+                : 'All APIs are healthy'}
           </h2>
           <p className="verdict-detail">
             {sum.total === 0 ? "We can't confirm health until requests arrive. Check that the customer is sending traffic to this environment."

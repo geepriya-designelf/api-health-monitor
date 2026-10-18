@@ -114,10 +114,10 @@ export interface ServiceHealth {
   telemetry: TelemetrySource | undefined; p95TargetMs: number;
 }
 // Health rules (prototype assumptions):
-//   unknown  – no data received, data delayed, or no requests in range (never shown as operational)
-//   critical – server-side failure rate (5xx + timeouts) ≥ 5%, or P95 ≥ 2× target          → "Disrupted"
+//   unknown  – no data received, data delayed, or no requests in range (never shown as healthy)
+//   critical – server-side failure rate (5xx + timeouts) ≥ 5%, or P95 ≥ 2× target          → "Critical"
 //   degraded – server-side failure rate ≥ 1%, rejected (4xx) ≥ 10%, or P95 above target    → "Degraded"
-//   healthy  – otherwise                                                                   → "Operational"
+//   healthy  – otherwise                                                                   → "Healthy"
 // 4xx responses usually mean the integration sent a bad request, so they degrade but never disrupt a service.
 export function serviceHealth(s: Scope): ServiceHealth[] {
   return dataset.services.map((svc) => {

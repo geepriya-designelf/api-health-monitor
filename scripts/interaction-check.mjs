@@ -12,11 +12,11 @@ const ok = (name, cond) => results.push(`${cond ? 'PASS' : 'FAIL'}  ${name}`);
 await page.goto(url);
 
 // Sketch layout essentials.
-ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts API: Disrupted/ }).isVisible());
+ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts API: Critical/ }).isVisible());
 ok('nav shows triage count', (await page.locator('.nav-count').count()) >= 1);
 
 // Verdict leads with the most severe service and offers one next action.
-ok('verdict headline names critical service', (await page.locator('.verdict-title').innerText()) === 'Payouts API is disrupted');
+ok('verdict headline names critical service', (await page.locator('.verdict-title').innerText()) === 'Payouts API is critical');
 await page.getByRole('button', { name: /^Review failed Payouts requests/ }).click();
 const svcCol = await page.locator('table.data tbody tr.row td:nth-child(5)').allInnerTexts();
 ok('Investigate filters activity to Payouts', svcCol.length > 0 && svcCol.every((t) => t === 'Payouts'));

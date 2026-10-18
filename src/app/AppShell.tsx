@@ -31,7 +31,7 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
   const critical = serviceHealth(s.scope).filter((h) => h.status === 'critical').length;
   const firing = dataset.alerts.filter((a) => a.enabled && a.state === 'triggered' && (s.customerId === 'all' || a.customerId === s.customerId)).length;
   const badges: Record<string, { n: number; tone: string; label: string } | undefined> = {
-    '/': critical ? { n: critical, tone: 'error', label: `${critical} disrupted ${critical === 1 ? 'API' : 'APIs'}` } : undefined,
+    '/': critical ? { n: critical, tone: 'error', label: `${critical} critical ${critical === 1 ? 'API' : 'APIs'}` } : undefined,
     '/activity': openTriage ? { n: openTriage, tone: 'warning', label: `${openTriage} ${openTriage === 1 ? 'request needs' : 'requests need'} triage` } : undefined,
     '/alerts': firing ? { n: firing, tone: 'error', label: `${firing} ${firing === 1 ? 'alert' : 'alerts'} triggered` } : undefined,
   };
