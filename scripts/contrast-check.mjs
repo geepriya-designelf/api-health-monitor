@@ -14,7 +14,7 @@ const lum = (hex) => {
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
 const surfaces = ['bg-canvas', 'bg-surface', 'bg-raised'];
 const checks = [
-  ...['text-primary', 'text-secondary', 'text-muted', 'accent-blue-text', 'accent-cyan', 'accent-purple', 'status-success', 'status-warning', 'status-warning-text', 'status-error', 'status-info', 'status-unknown'].flatMap((t) => surfaces.map((s) => [t, s, 4.5])),
+  ...['text-primary', 'text-secondary', 'text-muted', 'accent-blue-text', 'accent-cyan', 'accent-purple', 'status-success', 'status-warning', 'status-warning-text', 'status-healthy', 'status-error', 'status-info', 'status-unknown'].flatMap((t) => surfaces.map((s) => [t, s, 4.5])),
   ...['border-control', 'focus-ring', 'accent-blue', 'status-error-fill', 'chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5'].flatMap((t) => surfaces.map((s) => [t, s, 3])),
   ['text-on-accent', 'accent-blue', 4.5],
 ];

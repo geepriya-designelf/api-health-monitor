@@ -583,3 +583,9 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
   .is-collapsed .env-label { display: none; }
 }
 @media (max-width: 960px) { .sidebar-foot { width: auto; } .env-switch { width: auto; } }
+
+/* Service health: every status is colour coded (always paired with its word). */
+.svc-row .st-healthy { color: var(--status-healthy); }
+.svc-row .dot-healthy { background: var(--status-healthy-fill); }
+.svc-row .st-degraded { color: var(--status-warning-text); }
+.svc-row .dot-degraded { background: var(--status-warning-fill); }
