@@ -14,7 +14,7 @@ Immediate: verdict, success rate, P95, critical services. On demand: P50/P90 (KP
 ## 4. Lowering cognitive load
 - Jargon is explained in place: info tips on API calls, P95, success rate and slowest endpoint.
 - One status vocabulary everywhere: Healthy, Degraded, Critical, No data. Always icon + word, never colour alone.
-- Sensible defaults: Production, last 90 minutes, newest first, and "Needs triage" one click away.
+- Sensible defaults: Production, last 90 minutes, newest first, and "Needs resolution" one click away.
 
 ## 5. Data visualization answers an operational question
 The performance chart answers "when did it go wrong, and was it latency or errors?" Latency lines (left axis, ms) and error bars (right axis, %) share one time axis. Units, interval size and data freshness are labelled; selecting a service adds its P95 target line. Every chart has a tabular alternative. Brand secondary colours (Purple, Blue, Orange) are reserved for data so they never collide with status colours. 3D is used for depth and the service stack only; quantitative charts stay 2D because perspective distorts values.

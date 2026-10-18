@@ -14,7 +14,7 @@ import { TriagePanel } from './TriagePanel';
 type SortKey = 'timestamp' | 'latencyMs' | 'httpStatus';
 const svcName = (id: string) => dataset.services.find((s) => s.id === id)?.name ?? id;
 const epName = (id: string) => dataset.endpoints.find((e) => e.id === id)?.name ?? id;
-const STATUS_LABEL: Record<TriageStatus, string> = { new: 'Needs triage', investigating: 'Investigating', escalated: 'Escalated', resolved: 'Resolved' };
+const STATUS_LABEL: Record<TriageStatus, string> = { new: 'Needs resolution', investigating: 'Investigating', escalated: 'Escalated', resolved: 'Resolved' };
 
 export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
   const s = useScopeContext();

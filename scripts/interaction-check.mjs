@@ -30,7 +30,7 @@ await page.getByLabel('Service', { exact: true }).selectOption('');
 // Triage and resolve flow.
 // Toolbar is just search, service and one errors toggle.
 ok('toolbar has no chip filters', (await page.locator('.activity-toolbar .chip').count()) === 0);
-const triageCount = async () => page.locator('tr.row').getByText('Needs triage', { exact: false }).count();
+const triageCount = async () => page.locator('tr.row').getByText('Needs resolution', { exact: false }).count();
 await page.getByRole('button', { name: /^Failed requests only/ }).click();
 const errRows = await page.locator('tr.row td:nth-child(9)').allInnerTexts();
 ok('errors toggle shows only API errors', errRows.length > 0 && errRows.every((t) => /Failed|Rejected|Outcome unknown/.test(t)));
