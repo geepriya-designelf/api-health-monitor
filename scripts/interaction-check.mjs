@@ -12,7 +12,12 @@ const ok = (name, cond) => results.push(`${cond ? 'PASS' : 'FAIL'}  ${name}`);
 await page.goto(url);
 
 // Sketch layout essentials.
-ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts API: Critical/ }).isVisible());
+ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts: Critical/ }).isVisible());
+ok('Payouts listed first in service health', (await page.locator('.svc-row-name').first().innerText()) === 'Payouts');
+ok('service health names drop the API suffix', !(await page.locator('.svc-list').first().innerText()).includes(' API'));
+await page.getByRole('button', { name: /^FX: / }).click();
+ok('selecting a service shows no filter chip', (await page.locator('.activity-panel .chip').count()) === 0);
+await page.getByRole('button', { name: /^FX: / }).click();
 ok('nav shows triage count', (await page.locator('.nav-count').count()) >= 1);
 
 // Verdict leads with the most severe service and offers one next action.
@@ -79,7 +84,7 @@ ok('customer switch updates scope', (await combo.inputValue()).includes('Acme'))
 ok('dropdown has no Airwallex or All customers', await (async () => { await combo.click(); await combo.fill(''); const t = await page.getByRole('listbox').innerText(); await combo.press('Escape'); return !/Airwallex|All customers/.test(t); })());
 await combo.fill('airbnb'); await combo.press('Enter');
 await page.getByRole('button', { name: /^Sandbox/ }).click();
-ok('missing telemetry shown as No data, never healthy', await page.getByRole('button', { name: /^Wallets API: No data/ }).isVisible());
+ok('missing telemetry shown as No data, never healthy', await page.getByRole('button', { name: /^Wallets: No data/ }).isVisible());
 
 ok('scope line under heading removed', (await page.locator('.scope-chip').count()) === 0);
 ok('environment switch lives in the sidebar', (await page.locator('.sidebar .env-switch').count()) === 1 && (await page.locator('.env-tabs').count()) === 0);

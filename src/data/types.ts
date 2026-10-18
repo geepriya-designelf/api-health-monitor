@@ -1,6 +1,6 @@
 // Types for the synthetic dataset (see data/README.md for the full data dictionary).
 export type Environment = 'sandbox' | 'production';
-export type ServiceId = 'payments' | 'payouts' | 'fx' | 'wallets';
+export type ServiceId = 'payouts' | 'payments' | 'fx' | 'wallets';
 export type Outcome = 'success' | 'client_error' | 'server_error' | 'timeout';
 export type HealthStatus = 'healthy' | 'degraded' | 'critical' | 'unknown';
 export type TelemetryStatus = 'live' | 'stale' | 'missing';

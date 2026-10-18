@@ -23,7 +23,8 @@ const START = ANCHOR - 24 * HOUR;
 const SUCCESS_SAMPLE_RATE = 0.01;
 const SLOW_MS = 1000;
 // Histogram bin upper bounds (ms). The last bin holds 30 s gateway timeouts only.
-const LATENCY_BINS = [25, 50, 75, 100, 150, 200, 250, 300, 400, 500, 650, 800, 1000, 1500, 2000, 3000, 5000, 10000, 30000];
+// Fine bins below 1 s so interpolated P95/P99 stay smooth; last bin holds 30 s gateway timeouts.
+const LATENCY_BINS = [20, 30, 40, 50, 60, 70, 80, 90, 100, 120, 140, 160, 180, 200, 225, 250, 275, 300, 350, 400, 450, 500, 550, 600, 700, 800, 900, 1000, 1200, 1400, 1700, 2000, 2500, 3000, 4000, 6000, 10000, 30000];
 
 function mulberry32(seed) {
   return function () {
@@ -42,8 +43,10 @@ function normal() {
   const v = rand();
   return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
 }
-// Lognormal latency: median m, sigma s. sigma 0.55 gives P90 ≈ 2.0×m, P95 ≈ 2.5×m, P99 ≈ 3.6×m.
-const lognormal = (m, s = 0.55) => Math.round(m * Math.exp(s * normal()));
+// Lognormal latency: median m, sigma s. sigma 0.38 gives P95 ≈ 1.9×m, P99 ≈ 2.4×m.
+const lognormal = (m, s = 0.38) => Math.round(m * Math.exp(s * normal()));
+// Production APIs have a long tail (GC pauses, cold caches, partner retries): ~1.5% of calls take 2-5× longer.
+const withTail = (ms) => (rand() < 0.015 ? Math.round(ms * (2 + 3 * rand())) : ms);
 const binOf = (ms) => LATENCY_BINS.findIndex((b) => ms <= b);
 const iso = (ms) => new Date(ms).toISOString().replace('.000Z', 'Z');
 
@@ -54,24 +57,24 @@ const iso = (ms) => new Date(ms).toISOString().replace('.000Z', 'Z');
 //   "illustrative" – placeholder for the prototype; not a claimed Nium endpoint
 // ---------------------------------------------------------------------------
 const services = [
-  { id: 'payments', name: 'Pay-ins', p95TargetMs: 600, description: 'Collecting payments from payers' },
   { id: 'payouts', name: 'Payouts', p95TargetMs: 600, description: 'Sending money to beneficiaries' },
+  { id: 'payments', name: 'Payin', p95TargetMs: 600, description: 'Collecting payments from payers' },
   { id: 'fx', name: 'FX', p95TargetMs: 500, description: 'Currency quotes and conversions' },
   { id: 'wallets', name: 'Wallets', p95TargetMs: 400, description: 'Balances, funding and wallet transactions' },
 ];
 
 const W = '/api/v1/client/{clientHashId}/customer/{customerHashId}/wallet/{walletHashId}';
 const endpoints = [
-  { id: 'ep_transfer_money', service: 'payouts', method: 'POST', path: `${W}/remittance`, name: 'Transfer money', docStatus: 'unverified', medianMs: 205, weight: 5 },
-  { id: 'ep_add_beneficiary', service: 'payouts', method: 'POST', path: '/api/v2/client/{clientHashId}/customer/{customerHashId}/beneficiaries', name: 'Add beneficiary (v2)', docStatus: 'verified', medianMs: 240, weight: 2 },
-  { id: 'ep_remit_audit', service: 'payouts', method: 'GET', path: `${W}/remittance/{systemReferenceNumber}/audit`, name: 'Transaction status', docStatus: 'unverified', medianMs: 110, weight: 3 },
-  { id: 'ep_fx_quote', service: 'fx', method: 'POST', path: '/api/v1/client/{clientHashId}/quotes', name: 'Create quote', docStatus: 'verified', medianMs: 130, weight: 4 },
-  { id: 'ep_fx_conversion', service: 'fx', method: 'POST', path: '/api/v1/client/{clientHashId}/conversions', name: 'Create conversion', docStatus: 'unverified', medianMs: 260, weight: 2 },
-  { id: 'ep_wallet_balance', service: 'wallets', method: 'GET', path: W, name: 'Wallet balance', docStatus: 'unverified', medianMs: 85, weight: 5 },
-  { id: 'ep_wallet_txns', service: 'wallets', method: 'GET', path: `${W}/transactions`, name: 'Wallet transactions', docStatus: 'unverified', medianMs: 150, weight: 3 },
-  { id: 'ep_wallet_fund', service: 'wallets', method: 'POST', path: `${W}/fund`, name: 'Fund wallet', docStatus: 'unverified', medianMs: 190, weight: 1 },
-  { id: 'ep_payment_create', service: 'payments', method: 'POST', path: `${W}/payments`, name: 'Create payment', docStatus: 'illustrative', medianMs: 220, weight: 3 },
-  { id: 'ep_payment_get', service: 'payments', method: 'GET', path: '/api/v1/client/{clientHashId}/payments/{paymentId}', name: 'Get payment', docStatus: 'illustrative', medianMs: 105, weight: 2 },
+  { id: 'ep_transfer_money', service: 'payouts', method: 'POST', path: `${W}/remittance`, name: 'Transfer money', docStatus: 'unverified', medianMs: 260, weight: 5 },
+  { id: 'ep_add_beneficiary', service: 'payouts', method: 'POST', path: '/api/v2/client/{clientHashId}/customer/{customerHashId}/beneficiaries', name: 'Add beneficiary (v2)', docStatus: 'verified', medianMs: 210, weight: 2 },
+  { id: 'ep_remit_audit', service: 'payouts', method: 'GET', path: `${W}/remittance/{systemReferenceNumber}/audit`, name: 'Transaction status', docStatus: 'unverified', medianMs: 95, weight: 3 },
+  { id: 'ep_payment_create', service: 'payments', method: 'POST', path: `${W}/payments`, name: 'Create payment', docStatus: 'illustrative', medianMs: 230, weight: 3 },
+  { id: 'ep_payment_get', service: 'payments', method: 'GET', path: '/api/v1/client/{clientHashId}/payments/{paymentId}', name: 'Get payment', docStatus: 'illustrative', medianMs: 90, weight: 2 },
+  { id: 'ep_fx_quote', service: 'fx', method: 'POST', path: '/api/v1/client/{clientHashId}/quotes', name: 'Create quote', docStatus: 'verified', medianMs: 120, weight: 4 },
+  { id: 'ep_fx_conversion', service: 'fx', method: 'POST', path: '/api/v1/client/{clientHashId}/conversions', name: 'Create conversion', docStatus: 'unverified', medianMs: 190, weight: 2 },
+  { id: 'ep_wallet_balance', service: 'wallets', method: 'GET', path: W, name: 'Wallet balance', docStatus: 'unverified', medianMs: 70, weight: 5 },
+  { id: 'ep_wallet_txns', service: 'wallets', method: 'GET', path: `${W}/transactions`, name: 'Wallet transactions', docStatus: 'unverified', medianMs: 130, weight: 3 },
+  { id: 'ep_wallet_fund', service: 'wallets', method: 'POST', path: `${W}/fund`, name: 'Fund wallet', docStatus: 'unverified', medianMs: 170, weight: 1 },
 ];
 const weightTotal = endpoints.reduce((s, e) => s + e.weight, 0);
 
@@ -105,13 +108,13 @@ const customers = [
 
 // Scenario knobs per customer/environment. dailyVolume is requests per 24 h; rates are per-request probabilities.
 const scenarios = {
-  'acme_demo:production': { dailyVolume: 32000, validation: 0.006, auth: 0.0005, server: 0.0015, timeout: 0.0004, slow: 0.004, webhookFailureRate: 0.014,
-    incidents: [{ service: 'fx', fromH: 3.5, toH: 1.5, latencyX: 2.6, label: 'FX quote latency degradation' }] },
-  'acme_demo:sandbox': { dailyVolume: 3600, validation: 0.06, auth: 0.012, server: 0.003, timeout: 0, slow: 0.005,
+  'acme_demo:production': { dailyVolume: 32000, validation: 0.006, auth: 0.0005, server: 0.0015, timeout: 0.0004, slow: 0.0015, webhookFailureRate: 0.014,
+    incidents: [{ service: 'fx', fromH: 3.5, toH: 1.5, latencyX: 1.9, label: 'FX quote latency degradation' }] },
+  'acme_demo:sandbox': { dailyVolume: 3600, validation: 0.06, auth: 0.012, server: 0.003, timeout: 0, slow: 0.002,
     rateLimitBurst: { atH: 5.2, count: 60 } },
-  'airbnb_demo:production': { dailyVolume: 48000, validation: 0.005, auth: 0, server: 0.0015, timeout: 0.0004, slow: 0.004,
-    incidents: [{ service: 'payouts', fromH: 0.75, toH: 0.1, server: 0.11, timeout: 0.035, label: 'Payout partner errors' }] },
-  'airbnb_demo:sandbox': { dailyVolume: 1600, validation: 0.03, auth: 0.008, server: 0.001, timeout: 0, slow: 0.004,
+  'airbnb_demo:production': { dailyVolume: 48000, validation: 0.005, auth: 0, server: 0.0015, timeout: 0.0004, slow: 0.0015,
+    incidents: [{ service: 'payouts', fromH: 0.75, toH: 0.1, server: 0.11, timeout: 0.035, latencyX: 1.35, label: 'Payout partner errors' }] },
+  'airbnb_demo:sandbox': { dailyVolume: 1600, validation: 0.03, auth: 0.008, server: 0.001, timeout: 0, slow: 0.0015,
     missingServices: ['wallets'], staleServices: { payments: 3.2 } },
   'initech_demo:sandbox': { dailyVolume: 0 },
 };
@@ -196,8 +199,8 @@ for (const c of customers) {
           const incident = (sc.incidents ?? []).find((x) => x.service === ep.service && hoursAgo <= x.fromH && hoursAgo >= x.toH);
           const pServer = incident?.server ?? sc.server;
           const pTimeout = incident?.timeout ?? sc.timeout;
-          let latency = lognormal(ep.medianMs * (env === 'sandbox' ? 1.15 : 1) * (incident?.latencyX ?? 1));
-          if (rand() < sc.slow) latency = 1000 + Math.round(rand() * 1800); // occasional >1s outlier
+          let latency = withTail(lognormal(ep.medianMs * (env === 'sandbox' ? 1.15 : 1) * (incident?.latencyX ?? 1)));
+          if (rand() < sc.slow) latency = Math.round(1200 + 2400 * rand() ** 2); // rare multi-second stall
           latency = Math.max(18, Math.min(latency, 9000));
           let err = null;
           let outcome = 'success';

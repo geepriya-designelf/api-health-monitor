@@ -19,11 +19,24 @@ function Tip({ active, payload }: { active?: boolean; payload?: { payload: Trend
 }
 
 // Latency (lines, left axis, ms) + error rate (bars, right axis, %). Includes a tabular alternative.
+// Round axis steps (100, 200, 250, 500 ms, 1 s...) so gridlines read at a glance.
+function msTicks(max: number): number[] {
+  const step = [50, 100, 200, 250, 500, 1000, 2000, 2500, 5000].find((st) => max / st <= 4) ?? 10000;
+  const top = Math.max(step, Math.ceil(max / step) * step);
+  return Array.from({ length: top / step + 1 }, (_, i) => i * step);
+}
+const fmtTick = (v: number) => (v === 0 ? '0' : v >= 1000 ? `${+(v / 1000).toFixed(1)} s` : `${v} ms`);
+
 export function TrendChart({ data, title, height = 220, targetMs, show = ['p99', 'p95', 'p50', 'errors'] }: Props) {
   // With fewer than ~20 requests per interval, nearest-rank P95 and P99 both land on the slowest request.
   const busy = data.filter((p) => p.requests > 0);
   const thin = busy.length > 0 && busy.reduce((n, p) => n + p.requests, 0) / busy.length < 20;
   const worst = data.reduce<TrendPoint | null>((w, p) => ((p.p95 ?? 0) > (w?.p95 ?? 0) ? p : w), null);
+  const maxMs = Math.max(targetMs ?? 0, ...data.flatMap((p) => (show.includes('p99') ? [p.p99 ?? 0] : []).concat(show.includes('p95') ? [p.p95 ?? 0] : [], show.includes('p50') ? [p.p50 ?? 0] : [])));
+  const ticks = msTicks(maxMs || 100);
+  const maxPct = Math.max(...data.map((p) => p.errorRate ?? 0));
+  const pStep = [0.5, 1, 2, 2.5, 5, 10, 20, 25, 50].find((st) => maxPct / st <= 4) ?? 25;
+  const pTicks = Array.from({ length: Math.max(1, Math.ceil(maxPct / pStep)) + 1 }, (_, i) => i * pStep);
   const desc = `${title}. ${data.length} intervals. Highest P95 ${fmtMs(worst?.p95 ?? null)} at ${worst?.label ?? 'n/a'} UTC. Peak P99 ${fmtMs(data.reduce<number | null>((m, p) => (p.p99 != null && (m == null || p.p99 > m) ? p.p99 : m), null))}.`;
   return (
     <figure style={{ margin: 0 }}>
@@ -40,8 +53,8 @@ export function TrendChart({ data, title, height = 220, targetMs, show = ['p99',
           <ComposedChart data={data} margin={{ top: 6, right: 4, left: -8, bottom: 0 }}>
             <CartesianGrid stroke="var(--chart-grid)" vertical={false} />
             <XAxis dataKey="label" tickLine={false} axisLine={{ stroke: 'var(--border-strong)' }} minTickGap={24} />
-            <YAxis yAxisId="ms" tickLine={false} axisLine={false} width={52} tickFormatter={(v: number) => (v >= 1000 ? `${(v / 1000).toFixed(1)}s` : `${v}ms`)} />
-            {show.includes('errors') && <YAxis yAxisId="pct" orientation="right" tickLine={false} axisLine={false} width={36} tickFormatter={(v) => `${v}%`} />}
+            <YAxis yAxisId="ms" tickLine={false} axisLine={false} width={56} domain={[0, ticks[ticks.length - 1]]} ticks={ticks} tickFormatter={fmtTick} />
+            {show.includes('errors') && <YAxis yAxisId="pct" orientation="right" tickLine={false} axisLine={false} width={40} domain={[0, pTicks[pTicks.length - 1]]} ticks={pTicks} tickFormatter={(v) => `${v}%`} />}
             <Tooltip content={<Tip />} cursor={{ fill: 'rgba(255,255,255,0.05)' }} />
             {show.includes('errors') && <Bar yAxisId="pct" dataKey="errorRate" fill="var(--chart-4)" fillOpacity={0.7} radius={[2, 2, 0, 0]} maxBarSize={14} isAnimationActive={false} />}
             {targetMs && <ReferenceLine yAxisId="ms" y={targetMs} stroke="var(--text-secondary)" strokeDasharray="2 4" />}

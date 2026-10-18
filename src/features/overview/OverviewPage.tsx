@@ -49,7 +49,7 @@ export function OverviewPage() {
       <section className={`verdict v-${status}`} aria-label="Service health summary">
         <span className="verdict-icon" aria-hidden="true"><Icon name={VERDICT_ICON[status]} size={20} /></span>
         <div className="verdict-body" role="status">
-          <p className="verdict-eyebrow">Service health {STATUS_WORD[status].toLowerCase()}</p>
+          <p className="verdict-eyebrow">{status === 'healthy' ? 'Service health' : status === 'unknown' ? 'Service health unknown' : `Service health ${STATUS_WORD[status].toLowerCase()}`}</p>
           <h2 className="verdict-title">
             {sum.total === 0 ? 'No API traffic in this period'
               : lead ? `${lead.name} API is ${STATUS_WORD[lead.status].toLowerCase()}`
@@ -99,9 +99,9 @@ export function OverviewPage() {
               <li key={h.service}>
                 <button type="button" className={`svc-row${s.service === h.service ? ' is-selected' : ''}`} aria-pressed={s.service === h.service}
                   onClick={() => s.setService(s.service === h.service ? null : h.service)}
-                  aria-label={`${h.name} API: ${STATUS_WORD[h.status]}. ${h.reason}. ${s.service === h.service ? 'Show all APIs' : 'Show only this API'}`}>
+                  aria-label={`${h.name}: ${STATUS_WORD[h.status]}. ${h.reason}. ${s.service === h.service ? 'Show all APIs' : 'Show only this API'}`}>
                   <span className={`dot dot-${h.status}`} aria-hidden="true" />
-                  <span className="svc-row-name">{h.name} API</span>
+                  <span className="svc-row-name">{h.name}</span>
                   <span className={`svc-row-status st-${h.status}`}>{STATUS_WORD[h.status]}</span>
                   <span className="svc-row-reason">{h.cause === 'stale' ? `${h.reason} · last received ${fmtAgo(h.telemetry?.lastEventAt ?? null, ANCHOR_MS)}` : h.reason}</span>
                 </button>
@@ -111,10 +111,10 @@ export function OverviewPage() {
         </section>
         <section aria-labelledby="ov-perf" className="panel">
           <div className="panel-header">
-            <h2 id="ov-perf">Response time and failures{s.service ? ` · ${dataset.services.find((x) => x.id === s.service)?.name} API` : ''}</h2>
+            <h2 id="ov-perf">API Performance{s.service ? ` · ${dataset.services.find((x) => x.id === s.service)?.name}` : ''}</h2>
             <span className="freshness">Updated {new Date(ANCHOR_MS).toISOString().slice(11, 16)} UTC · {bucketLabel(s.range)} intervals</span>
           </div>
-          <TrendChart data={trend(s.scope, s.service)} title={`Response time and failed requests, ${period}`} height={170}
+          <TrendChart data={trend(s.scope, s.service)} title={`API performance: response time and failed requests, ${period}`} height={170}
             targetMs={s.service ? dataset.services.find((x) => x.id === s.service)?.p95TargetMs : undefined} />
         </section>
         <section aria-labelledby="ov-wh" className="panel">
@@ -142,7 +142,6 @@ export function OverviewPage() {
       <section aria-labelledby="ov-activity" className="panel activity-panel">
         <div className="panel-header">
           <h2 id="ov-activity">API activity</h2>
-          {s.service && <button type="button" className="chip" aria-pressed="true" onClick={() => s.setService(null)}>{dataset.services.find((x) => x.id === s.service)?.name}<Icon name="close" size={12} /><span className="sr-only">Remove service filter</span></button>}
         </div>
         <ActivityTable key={`${s.customerId}-${s.environment}-${s.range}`} pageSize={10} />
       </section>
