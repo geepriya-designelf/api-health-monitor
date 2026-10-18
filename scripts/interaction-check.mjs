@@ -18,7 +18,7 @@ ok('service health names drop the API suffix', !(await page.locator('.svc-list')
 await page.getByRole('button', { name: /^FX: / }).click();
 ok('selecting a service shows no filter chip', (await page.locator('.activity-panel .chip').count()) === 0);
 await page.getByRole('button', { name: /^FX: / }).click();
-ok('nav shows triage count', (await page.locator('.nav-count').count()) >= 1);
+ok('API activity nav has no count badge', (await page.locator('.nav-item', { hasText: 'API activity' }).locator('.nav-count').count()) === 0);
 
 // Verdict leads with the most severe service and offers one next action.
 ok('verdict headline names critical service', (await page.locator('.verdict-title').innerText()) === 'Payouts API is critical');
@@ -30,7 +30,7 @@ await page.getByLabel('Service', { exact: true }).selectOption('');
 // Triage and resolve flow.
 // Toolbar is just search, service and one errors toggle.
 ok('toolbar has no chip filters', (await page.locator('.activity-toolbar .chip').count()) === 0);
-const triageCount = async () => Number((await page.locator('.nav-item', { hasText: 'API activity' }).locator('.nav-count').innerText()).replace(/,/g, ''));
+const triageCount = async () => page.locator('tr.row').getByText('Needs triage', { exact: false }).count();
 await page.getByRole('button', { name: /^Failed requests only/ }).click();
 const errRows = await page.locator('tr.row td:nth-child(9)').allInnerTexts();
 ok('errors toggle shows only API errors', errRows.length > 0 && errRows.every((t) => /Failed|Rejected|Outcome unknown/.test(t)));

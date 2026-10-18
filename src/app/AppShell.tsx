@@ -4,12 +4,10 @@ import { Icon, type IconName } from '../components/Icon';
 import { NiumLogo } from '../components/NiumLogo';
 import { CustomerCombobox } from '../components/CustomerCombobox';
 import { dataset } from '../data/repository';
-import { RANGE_LABEL, scopedRequests, serviceHealth } from '../data/selectors';
+import { RANGE_LABEL, serviceHealth } from '../data/selectors';
 import type { TimeRange } from '../data/types';
 import { useScopeContext } from './ScopeContext';
-import { useTriage } from './TriageContext';
 import { useTheme } from './useTheme';
-import { needsTriage } from '../data/triage';
 
 const nav: { to: string; label: string; icon: IconName; hint: string }[] = [
   { to: '/', label: 'Overview', icon: 'overview', hint: 'Health at a glance' },
@@ -21,18 +19,14 @@ const nav: { to: string; label: string; icon: IconName; hint: string }[] = [
 
 export function AppShell({ title, children }: { title: string; children: ReactNode }) {
   const s = useScopeContext();
-  const triage = useTriage();
   const { theme, toggle: toggleTheme } = useTheme();
   // Collapsed sidebar is a per-viewer preference.
   const [collapsed, setCollapsed] = useState(() => { try { return localStorage.getItem('nium-nav-collapsed') === '1'; } catch { return false; } });
   const toggleNav = () => setCollapsed((c) => { try { localStorage.setItem('nium-nav-collapsed', c ? '0' : '1'); } catch { /* ignore */ } return !c; });
-  const rows = scopedRequests(s.scope);
-  const openTriage = rows.filter((r) => needsTriage(r) && triage.get(r.requestId).status !== 'resolved').length;
   const critical = serviceHealth(s.scope).filter((h) => h.status === 'critical').length;
   const firing = dataset.alerts.filter((a) => a.enabled && a.state === 'triggered' && (s.customerId === 'all' || a.customerId === s.customerId)).length;
   const badges: Record<string, { n: number; tone: string; label: string } | undefined> = {
     '/': critical ? { n: critical, tone: 'error', label: `${critical} critical ${critical === 1 ? 'API' : 'APIs'}` } : undefined,
-    '/activity': openTriage ? { n: openTriage, tone: 'warning', label: `${openTriage} ${openTriage === 1 ? 'request needs' : 'requests need'} triage` } : undefined,
     '/alerts': firing ? { n: firing, tone: 'error', label: `${firing} ${firing === 1 ? 'alert' : 'alerts'} triggered` } : undefined,
   };
   return (
