@@ -466,7 +466,8 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
   .is-collapsed .collapse-btn svg { transform: rotate(180deg); }
   .is-collapsed .sidebar-foot { align-items: center; padding: 0; }
   .is-collapsed .sidebar-foot .btn { width: 46px; justify-content: center; padding: 0; }
-  .is-collapsed .nav-item:hover .nav-tip, .is-collapsed .nav-item:focus-visible .nav-tip {
+  .is-collapsed .nav-item:hover .nav-tip, .is-collapsed .nav-item:focus-visible .nav-tip,
+  .is-collapsed .env-opt:hover .env-tip, .is-collapsed .env-opt:focus-visible .env-tip {
     display: flex; flex-direction: column; position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); z-index: 60;
     background: var(--bg-overlay); border: 1px solid var(--border-control); border-radius: var(--radius-md); padding: 8px 12px; box-shadow: var(--shadow-2);
     white-space: nowrap; color: var(--text-primary); font-size: 13px; font-weight: 500; pointer-events: none;
@@ -595,3 +596,12 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
 
 /* Sidebar sits above the workspace so collapsed-nav tooltips are never covered by sticky table headers or the app bar. */
 .sidebar { z-index: 30; }
+
+/* Collapsed sidebar: the environment switch shows S / P instead of dots. */
+.env-short { display: none; font-size: 13px; font-weight: 600; }
+@media (min-width: 961px) {
+  .is-collapsed .env-opt .env-dot { display: none; }
+  .is-collapsed .env-opt .env-short { display: inline; }
+}
+
+.env-opt { position: relative; }

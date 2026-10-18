@@ -63,8 +63,8 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
               const label = e === 'sandbox' ? 'Sandbox' : 'Production';
               return (
                 <button key={e} type="button" className={`env-opt env-${e}`} aria-pressed={s.environment === e} disabled={!enabled} onClick={() => s.setEnvironment(e)}
-                  aria-label={enabled ? label : `${label}, not provisioned`} title={enabled ? label : `${label} · not provisioned`}>
-                  <span className="env-dot" aria-hidden="true" /><span className="env-label">{label}</span>
+                  aria-label={enabled ? label : `${label}, not provisioned`}>
+                  <span className="env-dot" aria-hidden="true" /><span className="env-label">{label}</span><span className="env-short" aria-hidden="true">{label[0]}</span><span className="nav-tip env-tip" aria-hidden="true">{label}{!enabled && <small>Not provisioned</small>}</span>
                 </button>
               );
             })}
