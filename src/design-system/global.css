@@ -127,7 +127,7 @@ a { color: var(--accent-blue-text); }
 .svc-reason { font-size: var(--text-sm); color: var(--text-muted); }
 .svc::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 3px; border-radius: 0 3px 3px 0; background: var(--svc-accent, transparent); }
 .svc.s-critical { --svc-accent: var(--status-error); }
-.svc.s-degraded { --svc-accent: var(--status-warning); }
+.svc.s-degraded { --svc-accent: var(--status-warning-fill); }
 .svc.s-unknown { --svc-accent: var(--status-unknown); }
 
 /* ---------- Table ---------- */
@@ -259,7 +259,7 @@ details.data-alt summary { cursor: pointer; color: var(--accent-blue-text); font
 .st-healthy { color: var(--status-success); } .st-degraded { color: var(--status-warning); } .st-critical { color: var(--status-error); } .st-unknown { color: var(--status-unknown); }
 .dot { width: 10px; height: 10px; border-radius: 50%; position: relative; }
 .dot-healthy { background: var(--status-success); }
-.dot-degraded { background: var(--status-warning); }
+.dot-degraded { background: var(--status-warning-fill); }
 .dot-unknown { background: transparent; border: 2px dashed var(--status-unknown); width: 11px; height: 11px; }
 .dot-critical { background: var(--status-error-fill); box-shadow: 0 0 0 0 var(--status-error); animation: pulse 1.6s ease-out 3; }
 .dot-critical::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--status-error) 55%, transparent); }
@@ -371,7 +371,7 @@ table.data td { font-size: 13px; }
 /* Verdict: neutral surface, severity carried by a left edge + badge. */
 .verdict { border-left-width: 3px; }
 .verdict.tone-critical { border-left-color: var(--status-error-fill); }
-.verdict.tone-degraded { border-left-color: var(--status-warning); }
+.verdict.tone-degraded { border-left-color: var(--status-warning-fill); }
 .verdict.tone-healthy { border-left-color: var(--text-muted); }
 .verdict.tone-unknown { border-left-color: var(--border-control); }
 .verdict > span:last-child { color: var(--text-secondary); }
@@ -501,9 +501,12 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
 .v-critical { background: var(--bg-surface); border-color: color-mix(in srgb, var(--status-error-fill) 70%, transparent); }
 .v-critical .verdict-icon { background: var(--status-error-fill); color: #fff; box-shadow: 0 0 0 6px color-mix(in srgb, var(--status-error-fill) 16%, transparent); }
 .v-critical .verdict-eyebrow { color: var(--status-error); }
-.v-degraded { background: var(--bg-surface); border-color: color-mix(in srgb, var(--status-warning) 60%, transparent); }
-.v-degraded .verdict-icon { background: var(--status-warning); color: #000; box-shadow: 0 0 0 6px color-mix(in srgb, var(--status-warning) 14%, transparent); }
+.v-degraded { background: var(--bg-surface); border-color: color-mix(in srgb, var(--status-warning-fill) 70%, transparent); }
+.v-degraded .verdict-icon { background: var(--status-warning-fill); color: #000; box-shadow: 0 0 0 6px color-mix(in srgb, var(--status-warning-fill) 18%, transparent); }
 .v-degraded .verdict-eyebrow { color: var(--status-warning); }
+/* Light: yellow can't be text on white, so the eyebrow becomes a yellow pill with black text. */
+:root[data-theme='light'] .v-degraded { border-color: var(--status-warning-fill); }
+:root[data-theme='light'] .v-degraded .verdict-eyebrow { align-self: flex-start; color: #000; background: var(--status-warning-fill); padding: 2px 8px; border-radius: var(--radius-pill); }
 .v-unknown .verdict-icon { border: 2px dashed var(--status-unknown); background: transparent; }
 .v-healthy { padding-top: var(--space-3); padding-bottom: var(--space-3); }
 .v-healthy .verdict-icon { width: 36px; height: 36px; border-radius: 10px; align-self: center; }

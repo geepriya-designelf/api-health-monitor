@@ -46,6 +46,7 @@
   /* Status: always icon + label, never colour alone */
   --status-success: #E7E7DF;     /* healthy is calm and neutral; colour is for exceptions */
   --status-warning: #F7F775;
+  --status-warning-fill: #F7F775;  /* brand Yellow for icons, dots and edges; always paired with black glyphs */
   --status-error: #FF6B6B;       /* brand Red #E43A3A lifted for small-text contrast on raised surfaces */
   --status-error-fill: #E43A3A;  /* brand Red for dots, bars and edges */
   --status-info: #75D1FF;
@@ -139,7 +140,8 @@
   --accent-purple: #565C5D;
 
   --status-success: #2B2F30;
-  --status-warning: #7A5E00;
+  --status-warning: #7A5E00;     /* text only: yellow fails 4.5:1 on white */
+  --status-warning-fill: #FACC15; /* saturated yellow so fills read on white; black on it is 12:1 */
   --status-error: #B42323;
   --status-error-fill: #E43A3A;
   --status-info: #005F96;
