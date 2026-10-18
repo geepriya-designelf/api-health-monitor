@@ -1,0 +1,168 @@
+/* Nium API Health Monitor design tokens, aligned to the 2026 Nium brand sheet.
+   Derived from the brief's description of the Nium-style dark analytics reference:
+   deep navy canvas, indigo surfaces, blue/cyan accents, violet visualization colours.
+   Contrast verified with `npm run tokens:contrast`. */
+:root {
+  /* Nium brand (2026 sheet, official hex values). Primary: Black, Mint, Yellow, grays, White.
+     Secondary (Purple, Violet, Orange, Blue): data visualization only.
+     Tertiary (light tints, Red): UI states only. */
+  --brand-black: #000000;
+  --brand-mint: #00FFD4;
+  --brand-yellow: #F7F775;
+  --brand-dark-gray: #6F7677;
+  --brand-gray: #B8B8B3;
+  --brand-light-gray: #E7E7DF;
+  --brand-white: #FFFFFF;
+
+  /* Backgrounds and surfaces (black canvas, layered for depth) */
+  --bg-canvas: #000000;
+  --bg-surface: #0C0D0D;
+  --bg-raised: #141616;
+  --bg-overlay: #1B1E1E;
+  --bg-hover: #1A1D1D;
+  --bg-selected: #13261F;
+  --surface-gradient: linear-gradient(180deg, #121414 0%, #0A0B0B 100%);
+  --surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+
+  /* Text */
+  --text-primary: #FFFFFF;
+  --text-secondary: #E7E7DF;
+  --text-muted: #B8B8B3;
+  --text-on-accent: #000000;
+
+  /* Borders */
+  --border-subtle: #1F2323;   /* decorative dividers only */
+  --border-strong: #2C3131;
+  --border-control: #6F7677;  /* inputs and control boundaries, ≥3:1 */
+
+  /* Interactive accents */
+  --accent-blue: #00FFD4;        /* primary action fill (Mint) */
+  --accent-blue-hover: #BEFFF4;  /* Light Mint */
+  --accent-blue-text: #75D1FF;   /* links (Light Blue) */
+  --accent-cyan: #FFFFFF;        /* selected indicator (neutral; Mint is reserved for brand moments) */
+  --accent-violet: #C73AE4;
+  --accent-purple: #B8B8B3;      /* method tags stay neutral */
+
+  /* Status: always icon + label, never colour alone */
+  --status-success: #E7E7DF;     /* healthy is calm and neutral; colour is for exceptions */
+  --status-warning: #F7F775;
+  --status-error: #FF6B6B;       /* brand Red #E43A3A lifted for small-text contrast on raised surfaces */
+  --status-error-fill: #E43A3A;  /* brand Red for dots, bars and edges */
+  --status-info: #75D1FF;
+  --status-unknown: #B8B8B3;
+  --status-success-bg: #141616;
+  --status-warning-bg: #24240F;
+  --status-error-bg: #2B0F0D;
+  --status-info-bg: #0C1F2B;
+  --status-unknown-bg: #1A1C1C;
+
+  /* Charts: brand secondary palette */
+  --chart-1: #07ACFF;   /* Blue: P95 latency (single data hue) */
+  --chart-2: #B8B8B3;   /* Gray: P50 latency (dashed) */
+  --chart-3: #C73AE4;   /* Violet */
+  --chart-4: #E43A3A;   /* Red: error rate (exceptions only) */
+  --chart-5: #75D1FF;   /* Light Blue: P99 latency (dotted) */
+  --chart-grid: #1E2222;
+
+  /* Focus */
+  --focus-ring: #75D1FF;
+
+  /* Typography */
+  --font-display: 'Blinker', 'Inter Variable', system-ui, sans-serif;  /* page title + KPI numerals only */
+  --font-sans: 'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;  /* UI, tables, charts */
+  --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;  /* IDs, paths, error codes only */
+  --text-xs: 0.75rem;    /* 12 */
+  --text-sm: 0.8125rem;  /* 13 */
+  --text-md: 0.875rem;   /* 14 */
+  --text-lg: 1rem;       /* 16 */
+  --text-xl: 1.25rem;    /* 20 */
+  --text-2xl: 1.625rem;  /* 26 */
+  --text-3xl: 2rem;      /* 32 */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* Radii and elevation */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 8px 24px rgba(2, 6, 23, 0.55);
+  --shadow-3: 0 24px 64px rgba(2, 6, 23, 0.7);
+
+  /* Breakpoints (reference values; CSS media queries use the same numbers) */
+  --bp-sm: 640px;
+  --bp-md: 960px;
+  --bp-lg: 1280px;
+  --bp-xl: 1600px;
+}
+
+/* Light theme. Same semantics, re-tuned for white surfaces.
+   Yellow and Mint fail as text on white, so warning and links use darker brand-compatible tones. */
+:root[data-theme='light'] {
+  --bg-canvas: #F4F4F0;
+  --bg-surface: #FFFFFF;
+  --bg-raised: #F4F4F0;
+  --bg-overlay: #FFFFFF;
+  --bg-hover: #EDEDE7;
+  --bg-selected: #E7E7DF;
+  --surface-gradient: #FFFFFF;
+  --surface-highlight: 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  --text-primary: #000000;
+  --text-secondary: #2B2F30;
+  --text-muted: #565C5D;
+  --text-on-accent: #FFFFFF;
+
+  --border-subtle: #E7E7DF;
+  --border-strong: #D9D9D1;
+  --border-control: #6F7677;
+
+  --accent-blue: #000000;   /* Black primary on light, per brand light-background usage */
+  --accent-blue-hover: #2B2F30;
+  --accent-blue-text: #005F96;
+  --accent-cyan: #000000;
+  --accent-purple: #565C5D;
+
+  --status-success: #2B2F30;
+  --status-warning: #7A5E00;
+  --status-error: #B42323;
+  --status-error-fill: #E43A3A;
+  --status-info: #005F96;
+  --status-unknown: #565C5D;
+  --status-success-bg: #F4F4F0;
+  --status-warning-bg: #FBF7DC;
+  --status-error-bg: #FDECEC;
+  --status-info-bg: #EAF4FB;
+  --status-unknown-bg: #F4F4F0;
+
+  --chart-1: #0077BE;
+  --chart-2: #6F7677;
+  --chart-3: #A12CBB;
+  --chart-4: #E43A3A;
+  --chart-5: #00507F;
+  --chart-grid: #ECECE6;
+
+  --focus-ring: #005F96;
+  --logo-fill: #000000;
+  --nav-indicator: #000000;
+
+  --shadow-2: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-3: 0 24px 64px rgba(0, 0, 0, 0.18);
+  color-scheme: light;
+}
+:root { --logo-fill: #00FFD4; --nav-indicator: #00FFD4; color-scheme: dark; }
