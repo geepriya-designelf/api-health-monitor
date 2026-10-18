@@ -82,6 +82,8 @@ await page.getByRole('button', { name: /^Sandbox/ }).click();
 ok('missing telemetry shown as No data, never healthy', await page.getByRole('button', { name: /^Wallets API: No data/ }).isVisible());
 
 ok('scope line under heading removed', (await page.locator('.scope-chip').count()) === 0);
+ok('environment switch lives in the sidebar', (await page.locator('.sidebar .env-switch').count()) === 1 && (await page.locator('.env-tabs').count()) === 0);
+ok('sidebar has no demo data fluff', (await page.locator('.sidebar').innerText()).match(/Demo data|Synthetic telemetry|Download/) === null);
 
 // Sidebar collapses to icons; hover reveals what each icon means.
 await page.getByRole('button', { name: 'Collapse navigation' }).click();
@@ -108,7 +110,8 @@ await page.getByRole('button', { name: 'Cancel' }).click();
 ok('cancel keeps alert enabled', (await page.getByRole('switch').first().getAttribute('aria-checked')) === 'true');
 await page.goto(url);
 
-// Download returns the actual dataset.
+// Download returns the actual dataset (lives on the Integration page, not in the nav).
+await page.goto(url.replace('#/', '#/integration'));
 const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download demo data (JSON)' }).click()]);
 ok('download equals data/nium-dashboard-mock-data.json', JSON.stringify(JSON.parse(readFileSync(await dl.path(), 'utf8'))) === JSON.stringify(JSON.parse(readFileSync('data/nium-dashboard-mock-data.json', 'utf8'))));
 

@@ -140,14 +140,14 @@
   --accent-purple: #565C5D;
 
   --status-success: #2B2F30;
-  --status-warning: #7A5E00;     /* text only: yellow fails 4.5:1 on white */
+  --status-warning: #000000;     /* text: yellow fails 4.5:1 on white, so words stay black and yellow fills carry the signal */
   --status-warning-fill: #FACC15; /* saturated yellow so fills read on white; black on it is 12:1 */
   --status-error: #B42323;
   --status-error-fill: #E43A3A;
   --status-info: #005F96;
   --status-unknown: #565C5D;
   --status-success-bg: #F4F4F0;
-  --status-warning-bg: #FBF7DC;
+  --status-warning-bg: #FEF6C3;
   --status-error-bg: #FDECEC;
   --status-info-bg: #EAF4FB;
   --status-unknown-bg: #F4F4F0;

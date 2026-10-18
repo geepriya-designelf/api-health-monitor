@@ -3,8 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Icon, type IconName } from '../components/Icon';
 import { NiumLogo } from '../components/NiumLogo';
 import { CustomerCombobox } from '../components/CustomerCombobox';
-import { DownloadDataButton } from '../components/DataNotice';
-import { dataset, ANCHOR_MS } from '../data/repository';
+import { dataset } from '../data/repository';
 import { RANGE_LABEL, scopedRequests, serviceHealth } from '../data/selectors';
 import type { TimeRange } from '../data/types';
 import { useScopeContext } from './ScopeContext';
@@ -40,7 +39,12 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
     <div className={`app${collapsed ? ' is-collapsed' : ''}`}>
       <a className="skip-link" href="#main">Skip to content</a>
       <aside className="sidebar" aria-label="Primary">
-        <NiumLogo />
+        <div className="sidebar-top">
+          <NiumLogo />
+          <button type="button" className="collapse-btn" onClick={toggleNav} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'} title={collapsed ? 'Expand navigation' : 'Collapse navigation'}>
+            <Icon name="chevronLeft" size={16} />
+          </button>
+        </div>
         <nav aria-label="Main">
           <ul className="nav-list">
             {nav.map((n) => {
@@ -59,12 +63,18 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
           </ul>
         </nav>
         <div className="sidebar-foot">
-          <span className="demo-pill">Demo data</span>
-          <p className="muted" style={{ fontSize: 11 }}>Synthetic telemetry as of {new Date(ANCHOR_MS).toISOString().slice(0, 16).replace('T', ' ')} UTC</p>
-          <DownloadDataButton compact />
-          <button type="button" className="collapse-btn" onClick={toggleNav} aria-expanded={!collapsed} aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'} title={collapsed ? 'Expand navigation' : 'Collapse navigation'}>
-            <Icon name="chevronLeft" size={16} /><span className="collapse-label">Collapse</span>
-          </button>
+          <div className="env-switch" role="group" aria-label="Environment">
+            {(['sandbox', 'production'] as const).map((e) => {
+              const enabled = s.availableEnvs.includes(e);
+              const label = e === 'sandbox' ? 'Sandbox' : 'Production';
+              return (
+                <button key={e} type="button" className={`env-opt env-${e}`} aria-pressed={s.environment === e} disabled={!enabled} onClick={() => s.setEnvironment(e)}
+                  aria-label={enabled ? label : `${label}, not provisioned`} title={enabled ? label : `${label} · not provisioned`}>
+                  <span className="env-dot" aria-hidden="true" /><span className="env-label">{label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </aside>
       <div className="workspace">
@@ -84,16 +94,6 @@ export function AppShell({ title, children }: { title: string; children: ReactNo
             </select>
           </div>
         </header>
-        <div className="env-tabs" role="group" aria-label="Environment">
-          {(['sandbox', 'production'] as const).map((e) => {
-            const enabled = s.availableEnvs.includes(e);
-            return (
-              <button key={e} type="button" className={`env-tab env-${e}`} aria-pressed={s.environment === e} disabled={!enabled} onClick={() => s.setEnvironment(e)}>
-                <span className="env-dot" aria-hidden="true" />{e === 'sandbox' ? 'Sandbox' : 'Production'}{!enabled && <span className="muted"> · not provisioned</span>}
-              </button>
-            );
-          })}
-        </div>
         <main id="main" tabIndex={-1} className="content">{children}</main>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { DownloadDataButton } from '../../components/DataNotice';
 import { useScopeContext } from '../../app/ScopeContext';
 import { HealthBadge } from '../../components/Badges';
 import { Icon } from '../../components/Icon';
@@ -35,6 +36,7 @@ export function IntegrationPage() {
           </ul>
         </section>
       ))}
+      <p className="retention-note" style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>Everything on this dashboard is synthetic demo data, not real customer traffic. <DownloadDataButton compact /></p>
     </div>
   );
 }

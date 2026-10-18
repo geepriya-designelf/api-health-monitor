@@ -123,7 +123,7 @@ export function OverviewPage() {
           {wh.total > 0 && (
             <div className="meter" role="img" aria-label={`${wh.delivered} delivered, ${wh.delayed} delayed, ${wh.failed} failed`}>
               <span style={{ flexGrow: wh.delivered, background: 'var(--text-muted)' }} />
-              <span style={{ flexGrow: wh.delayed, background: 'var(--status-warning)' }} />
+              <span style={{ flexGrow: wh.delayed, background: 'var(--status-warning-fill)' }} />
               <span style={{ flexGrow: wh.failed, background: 'var(--status-error-fill)' }} />
             </div>
           )}
