@@ -589,3 +589,6 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
 .svc-row .dot-healthy { background: var(--status-healthy-fill); }
 .svc-row .st-degraded { color: var(--status-warning-text); }
 .svc-row .dot-degraded { background: var(--status-warning-fill); }
+
+/* App bar stays put while the page scrolls, so scope controls are always in reach. */
+.appbar { position: sticky; top: 0; z-index: 25; background: var(--bg-canvas); border-bottom: 1px solid var(--border-subtle); padding-bottom: var(--space-4); }
