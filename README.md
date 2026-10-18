@@ -28,6 +28,11 @@ Offline single-file preview (no server needed):
 npm run build:preview-file   # writes preview-file/index.html, open it in a browser
 ```
 
+## GitHub Pages
+`docs/index.html` is a self-contained build of the app for GitHub Pages (the repo root `index.html` is the Vite source entry and does not run without a build).
+In **Settings → Pages**, set *Source: Deploy from a branch*, branch `claude/kind-knuth-q4a01b` (or `main` after merging), folder **`/docs`**.
+Rebuild it after changes with `npm run build:pages`.
+
 ## Scripts
 | Script | Purpose |
 | --- | --- |

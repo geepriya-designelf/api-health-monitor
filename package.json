@@ -11,7 +11,8 @@
     "typecheck": "tsc -b --noEmit",
     "data:generate": "node scripts/generate-mock-data.mjs",
     "data:validate": "node scripts/validate-data.mjs",
-    "tokens:contrast": "node scripts/contrast-check.mjs"
+    "tokens:contrast": "node scripts/contrast-check.mjs",
+    "build:pages": "vite build --mode singlefile && cp preview-file/index.html docs/index.html"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.1.0",
