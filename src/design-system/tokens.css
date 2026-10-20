@@ -49,6 +49,12 @@
   --status-healthy: #5EE08A;      /* service health label: green, colour-coded per status */
   --status-healthy-fill: #34C759;
   --status-warning-text: #F7F775;
+  /* HTTP method chips: hues kept clear of status red / green / yellow */
+  --method-get: #75D1FF;
+  --method-post: #C9A0F5;
+  --method-put: #5FE3D0;
+  --method-patch: #F0A3C8;
+  --method-delete: #FF9B8A;
   --status-warning-fill: #F7F775;  /* brand Yellow for icons, dots and edges; always paired with black glyphs */
   --status-error: #FF6B6B;       /* brand Red #E43A3A lifted for small-text contrast on raised surfaces */
   --status-error-fill: #E43A3A;  /* brand Red for dots, bars and edges */
@@ -146,6 +152,11 @@
   --status-warning: #000000;     /* text: yellow fails 4.5:1 on white, so words stay black and yellow fills carry the signal */
   --status-healthy: #1A7F37;      /* 5.1:1 on white */
   --status-healthy-fill: #22A447;
+  --method-get: #005F96;
+  --method-post: #7A2E96;
+  --method-put: #0F6E66;
+  --method-patch: #9B2C66;
+  --method-delete: #A3321F;
   --status-warning-text: #7F6A00; /* yellow eyebrow text, 5.3:1 on white */
   --status-warning-fill: #FACC15; /* saturated yellow so fills read on white; black on it is 12:1 */
   --status-error: #B42323;

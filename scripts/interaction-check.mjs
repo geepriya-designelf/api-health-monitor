@@ -12,19 +12,25 @@ const ok = (name, cond) => results.push(`${cond ? 'PASS' : 'FAIL'}  ${name}`);
 await page.goto(url);
 
 // Sketch layout essentials.
-ok('critical service shown in service health', await page.getByRole('button', { name: /^Payouts: Critical/ }).isVisible());
+ok('critical service shown in service health', (await page.locator('.svc-row').first().innerText()).replace(/\s+/g, ' ').startsWith('Payouts Critical'));
+ok('service health rows are not clickable', (await page.locator('.svc-list button').count()) === 0 && (await page.locator('.svc-list .dot').count()) === 0);
+ok('each status word has an icon', (await page.locator('.svc-row-status svg').count()) === (await page.locator('.svc-row').count()));
 ok('Payouts listed first in service health', (await page.locator('.svc-row-name').first().innerText()) === 'Payouts');
 ok('service health names drop the API suffix', !(await page.locator('.svc-list').first().innerText()).includes(' API'));
-await page.getByRole('button', { name: /^FX: / }).click();
-ok('selecting a service shows no filter chip', (await page.locator('.activity-panel .chip').count()) === 0);
-await page.getByRole('button', { name: /^FX: / }).click();
 ok('API activity nav has no count badge', (await page.locator('.nav-item', { hasText: 'API activity' }).locator('.nav-count').count()) === 0);
 
 // Verdict leads with the most severe service and offers one next action.
-ok('verdict headline names critical service', (await page.locator('.verdict-title').innerText()) === 'Payouts API is critical');
-await page.getByRole('button', { name: /^Review failed Payouts requests/ }).click();
+ok('critical banner removed from overview', (await page.locator('.verdict').count()) === 0);
+const chartBefore = await page.locator('.data-alt tbody').first().textContent();
+await page.getByRole('button', { name: /^Show performance for: All APIs/ }).click();
+await page.locator('.svc-picker-list').getByRole('option', { name: /^Payouts/ }).click();
+ok('performance picker switches to Payouts', (await page.getByRole('button', { name: /^Show performance for:/ }).getAttribute('aria-label')) === 'Show performance for: Payouts');
+ok('picking a service redraws the chart', (await page.locator('.data-alt tbody').first().textContent()) !== chartBefore);
 const svcCol = await page.locator('table.data tbody tr.row td:nth-child(5)').allInnerTexts();
-ok('Investigate filters activity to Payouts', svcCol.length > 0 && svcCol.every((t) => t === 'Payouts'));
+ok('picker keeps activity in sync with Payouts', svcCol.length > 0 && svcCol.every((t) => t === 'Payouts'));
+await page.getByRole('button', { name: /^Show performance for:/ }).focus();
+await page.keyboard.press('ArrowDown'); await page.keyboard.press('Home'); await page.keyboard.press('Escape');
+ok('picker closes on Escape', (await page.getByRole('listbox').count()) === 0);
 await page.getByLabel('Service', { exact: true }).selectOption('');
 
 // Triage and resolve flow.
@@ -84,7 +90,7 @@ ok('customer switch updates scope', (await combo.inputValue()).includes('Acme'))
 ok('dropdown has no Airwallex or All customers', await (async () => { await combo.click(); await combo.fill(''); const t = await page.getByRole('listbox').innerText(); await combo.press('Escape'); return !/Airwallex|All customers/.test(t); })());
 await combo.fill('airbnb'); await combo.press('Enter');
 await page.getByRole('button', { name: /^Sandbox/ }).click();
-ok('missing telemetry shown as No data, never healthy', await page.getByRole('button', { name: /^Wallets: No data/ }).isVisible());
+ok('missing telemetry shown as No data, never healthy', (await page.locator('.svc-row', { hasText: 'Wallets' }).innerText()).includes('No data'));
 
 ok('scope line under heading removed', (await page.locator('.scope-chip').count()) === 0);
 ok('environment switch lives in the sidebar', (await page.locator('.sidebar .env-switch').count()) === 1 && (await page.locator('.env-tabs').count()) === 0);

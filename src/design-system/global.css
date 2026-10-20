@@ -605,3 +605,41 @@ kbd { font-family: var(--font-mono); font-size: 11px; padding: 0 5px; border: 1p
 }
 
 .env-opt { position: relative; }
+
+/* API Performance: service picker drives the chart. */
+.perf-header { align-items: flex-start; }
+.perf-header h2 { margin-bottom: 2px; }
+.svc-picker { position: relative; }
+.svc-picker-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; min-width: 150px; border: 1px solid var(--border-control); border-radius: var(--radius-md); background: var(--bg-surface); color: var(--text-primary); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer; }
+.svc-picker-btn:hover { background: var(--bg-hover); }
+.svc-picker-chev { margin-left: auto; padding-left: 8px; font-size: 11px; color: var(--text-secondary); }
+.svc-picker-list { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 260px; list-style: none; margin: 0; padding: 6px; background: var(--bg-overlay); border: 1px solid var(--border-control); border-radius: var(--radius-md); box-shadow: var(--shadow-2); }
+.svc-picker-list li { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 7px; font-size: 13px; cursor: pointer; }
+.svc-picker-list li.is-active { background: var(--bg-hover); }
+.svc-picker-list li.is-selected { background: var(--bg-selected); font-weight: 600; }
+.svc-picker-list small { margin-left: auto; font-size: 12px; font-weight: 600; }
+.svc-picker .dot { width: 8px; height: 8px; flex: none; }
+.svc-picker .dot-critical::after { display: none; }
+.svc-picker .dot-critical { animation: none; }
+.svc-picker .dot-none { background: var(--text-muted); }
+.svc-picker .dot-healthy { background: var(--status-healthy-fill); }
+.svc-picker .dot-degraded { background: var(--status-warning-fill); }
+.svc-picker-list .st-healthy { color: var(--status-healthy); }
+.svc-picker-list .st-degraded { color: var(--status-warning-text); }
+
+/* Service health is read-only: name and reason on the left, icon + status word on the right. */
+.svc-row { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; padding: 9px 8px; border-radius: 0; cursor: default; }
+.svc-row:hover { background: transparent; }
+.svc-row-reason { grid-column: 1 / -1; }
+.svc-row-status { display: inline-flex; align-items: center; gap: 5px; }
+.svc-row-status svg { flex: none; }
+.svc-row .st-critical { color: var(--status-error); }
+.svc-row .st-unknown { color: var(--status-unknown); }
+
+/* HTTP method chips: one colour per verb so GET and POST scan apart at a glance. */
+.method { --m: var(--text-muted); color: var(--m); border-color: color-mix(in srgb, var(--m) 40%, transparent); background: color-mix(in srgb, var(--m) 10%, transparent); font-weight: 600; }
+.method-GET { --m: var(--method-get); }
+.method-POST { --m: var(--method-post); }
+.method-PUT { --m: var(--method-put); }
+.method-PATCH { --m: var(--method-patch); }
+.method-DELETE { --m: var(--method-delete); }
