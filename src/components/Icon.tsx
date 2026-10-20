@@ -26,6 +26,8 @@ const paths = {
   chevronLeft: 'M13 5l-5 5 5 5M5 4v12',
   flag: 'M5 17V3m0 1h9l-2 3 2 3H5',
   user: 'M10 10a3 3 0 100-6 3 3 0 000 6zm-6 7a6 6 0 0112 0',
+  sparkle: 'M10 2.5l1.6 4.4 4.4 1.6-4.4 1.6L10 14.5l-1.6-4.4L4 8.5l4.4-1.6zM15.5 13l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z',
+  send: 'M3 10l14-6.5L12 17l-2.2-5.2zm6.8 1.8L17 3.5',
 };
 export type IconName = keyof typeof paths;
 const GRID_24: Partial<Record<IconName, true>> = { webhook: true };

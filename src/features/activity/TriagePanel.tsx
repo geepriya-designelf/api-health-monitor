@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTriage, type TriageStatus } from '../../app/TriageContext';
+import { useAssistant } from '../../app/AssistantContext';
 import { HttpStatusBadge } from '../../components/Badges';
 import { handoffText } from './handoff';
 import { Icon } from '../../components/Icon';
@@ -15,6 +16,7 @@ const RESOLUTIONS = ['Customer fixed the request', 'Retried successfully', 'Part
 // Reading order: what happened → what to do → the few facts needed to do it. Everything else sits behind "More details".
 export function TriagePanel({ r, d, onShowSimilar }: { r: ApiRequest; d: Diagnosis; onShowSimilar: () => void }) {
   const triage = useTriage();
+  const assistant = useAssistant();
   const rec = triage.get(r.requestId);
   const [checked, setChecked] = useState<boolean[]>(() => d.steps.map(() => false));
   const [resolving, setResolving] = useState(false);
@@ -54,6 +56,7 @@ export function TriagePanel({ r, d, onShowSimilar }: { r: ApiRequest; d: Diagnos
         </div>
         {!resolving && (
           <div className="tp-actions">
+            <button type="button" className="btn btn-ghost" onClick={() => assistant.ask(`Investigate ${r.traceId.replace('demo-trace-', 'dt-')}`)}><Icon name="sparkle" size={14} />Ask assistant</button>
             {rec.status === 'new' && <button type="button" className="btn" onClick={() => { triage.update(targets, { status: 'investigating', note: 'Investigation started' }); setMsg('Marked investigating.'); }}>Start investigating</button>}
             {(rec.status === 'new' || rec.status === 'investigating') && <button type="button" className="btn" onClick={escalate} aria-label="Escalate and copy handoff"><Icon name="copy" size={14} />Escalate</button>}
             {rec.status !== 'resolved' && <button type="button" className="btn btn-primary" onClick={() => setResolving(true)}>Resolve{scopeNote}</button>}

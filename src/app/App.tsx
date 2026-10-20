@@ -2,6 +2,7 @@ import { HashRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AppShell } from './AppShell';
 import { ScopeProvider } from './ScopeContext';
 import { TriageProvider } from './TriageContext';
+import { AssistantProvider } from './AssistantContext';
 import { OverviewPage } from '../features/overview/OverviewPage';
 import { ActivityPage } from '../features/activity/ActivityPage';
 import { WebhooksPage } from '../features/webhooks/WebhooksPage';
@@ -31,9 +32,11 @@ export function App() {
     <HashRouter>
       <ScopeProvider>
         <TriageProvider>
-          <Routes>
-            <Route path="/*" element={<Dashboard />} />
-          </Routes>
+          <AssistantProvider>
+            <Routes>
+              <Route path="/*" element={<Dashboard />} />
+            </Routes>
+          </AssistantProvider>
         </TriageProvider>
       </ScopeProvider>
     </HashRouter>

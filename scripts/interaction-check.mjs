@@ -126,6 +126,31 @@ await page.goto(url.replace('#/', '#/integration'));
 const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download demo data (JSON)' }).click()]);
 ok('download equals data/nium-dashboard-mock-data.json', JSON.stringify(JSON.parse(readFileSync(await dl.path(), 'utf8'))) === JSON.stringify(JSON.parse(readFileSync('data/nium-dashboard-mock-data.json', 'utf8'))));
 
+// Investigation assistant: trace lookup, follow-ups, and hand-off to the table.
+await page.goto(url);
+await page.getByRole('button', { name: /^Ask the investigation assistant/ }).click();
+ok('assistant opens from the app bar', await page.getByRole('dialog', { name: 'Investigation assistant' }).isVisible());
+await page.locator('#assistant-q').fill('dt-e3b6ff2c');
+await page.keyboard.press('Enter');
+await page.waitForTimeout(700);
+const firstReply = await page.locator('.msg-bot').last().innerText();
+ok('assistant diagnoses a pasted trace ID', /Payouts API failures|timed out/.test(firstReply) && firstReply.includes('dt-e3b6ff2c'));
+await page.locator('.assistant-chip', { hasText: 'Is it safe to retry?' }).click();
+await page.waitForTimeout(700);
+ok('assistant answers retry safety for a timeout', (await page.locator('.msg-bot').last().innerText()).startsWith('Not yet'));
+await page.locator('#assistant-q').fill('dt-00000000');
+await page.keyboard.press('Enter');
+await page.waitForTimeout(700);
+ok('assistant explains a missing trace ID', (await page.locator('.msg-bot').last().innerText()).includes("can't find"));
+await page.locator('.msg-bot').filter({ hasText: 'dt-e3b6ff2c' }).first().getByRole('button', { name: 'Open in API activity' }).click();
+await page.waitForTimeout(500);
+ok('assistant hands the trace ID to API activity search', (await page.locator('.search input').inputValue()) === 'dt-e3b6ff2c');
+await page.keyboard.press('Escape');
+ok('Escape closes the assistant', (await page.locator('.assistant').count()) === 0);
+await page.keyboard.press('Control+k');
+ok('Ctrl+K opens the assistant', (await page.locator('.assistant').count()) === 1);
+await page.keyboard.press('Escape');
+
 // Reflow at 320px (400% zoom of 1280).
 await page.setViewportSize({ width: 320, height: 800 });
 const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);

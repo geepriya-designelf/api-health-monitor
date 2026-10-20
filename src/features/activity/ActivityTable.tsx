@@ -21,7 +21,13 @@ export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
   const triage = useTriage();
   const all = useMemo(() => scopedRequests(s.scope), [s.scope.customerId, s.scope.environment, s.scope.range]);
   const totals = useMemo(() => summarizeScope(s.scope, s.service ?? undefined), [s.scope.customerId, s.scope.environment, s.scope.range, s.service]);
-  const [q, setQ] = useState('');
+  // The assistant can hand over a trace ID to search for ("Open in API activity").
+  const [q, setQ] = useState(() => { try { const v = sessionStorage.getItem('nium-pending-search') ?? ''; sessionStorage.removeItem('nium-pending-search'); return v; } catch { return ''; } });
+  useEffect(() => {
+    const onSearch = (e: Event) => { setQ((e as CustomEvent<string>).detail); setPage(0); };
+    window.addEventListener('nium-search', onSearch);
+    return () => window.removeEventListener('nium-search', onSearch);
+  }, []);
   const [errorsOnly, setErrorsOnly] = useState(false);
   const [errorCode, setErrorCode] = useState('');
   const [sort, setSort] = useState<{ key: SortKey; dir: 'asc' | 'desc' }>({ key: 'timestamp', dir: 'desc' });
@@ -52,7 +58,7 @@ export function ActivityTable({ pageSize = 10 }: { pageSize?: number }) {
   // The open row stays pinned so its confirmation stays visible after a triage change filters it out.
   const filtered = base.filter((r) => r.requestId === expanded ||
     (!errorsOnly || r.outcome !== 'success') && (!errorCode || errorLabel(r) === errorCode) &&
-    (!needle || [r.traceId, r.xRequestId, r.endpoint, epName(r.endpointId), r.errorCode ?? '', r.errorSummary ?? '', String(r.httpStatus), r.systemReferenceNumber ?? ''].some((f) => f.toLowerCase().includes(needle))));
+    (!needle || [r.traceId, r.traceId.replace('demo-trace-', 'dt-'), r.xRequestId, r.endpoint, epName(r.endpointId), r.errorCode ?? '', r.errorSummary ?? '', String(r.httpStatus), r.systemReferenceNumber ?? ''].some((f) => f.toLowerCase().includes(needle))));
   const m = sort.dir === 'asc' ? 1 : -1;
   filtered.sort((a, b) => (a[sort.key] < b[sort.key] ? -m : a[sort.key] > b[sort.key] ? m : 0));
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
