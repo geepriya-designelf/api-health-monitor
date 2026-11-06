@@ -65,7 +65,7 @@
   .grid {
     flex: 1;
     display: grid;
-    grid-template-columns: 1fr 0.95fr 1.35fr 0.95fr;
+    grid-template-columns: 0.92fr 0.88fr 1.45fr 0.95fr;
     column-gap: 7mm;
     min-height: 0;
   }
@@ -80,10 +80,10 @@
     margin-bottom: 2.2mm;
   }
   .item { text-align: center; margin-bottom: 2.4mm; }
-  .item .name { font-weight: 700; font-size: 11pt; line-height: 1.2; }
+  .item .name { font-weight: 700; font-size: 11.4pt; line-height: 1.2; }
   .tags { white-space: nowrap; }
   .item .price { font-weight: 700; margin-left: 0.25em; }
-  .item .desc { font-size: 9.2pt; line-height: 1.25; margin-top: 0.4mm; }
+  .item .desc { font-size: 9.5pt; line-height: 1.28; margin-top: 0.4mm; }
   .note { font-size: 8.4pt; text-align: center; line-height: 1.25; margin: -1mm 0 2.4mm; font-style: italic; }
 
   .ic { display: inline-block; width: 4mm; height: 4mm; vertical-align: -0.8mm; margin-left: 1mm; }
@@ -125,10 +125,17 @@
   h3 { font-size: 10pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); text-align: center; margin: 1mm 0 2mm; }
   .hl { color: var(--red); }
   .tagline.kn { font-family: "Noto Sans Kannada", sans-serif; font-size: 15pt; word-spacing: 0.2em; letter-spacing: 0.02em; }
-  .catering { text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 1.5mm; }
+  .catering { text-align: center; margin-top: 4mm; display: flex; flex-direction: column; align-items: center; gap: 1.5mm; }
   .catering h2 { color: var(--red); font-size: 12pt; margin: 0; }
-  .catering p { font-size: 9pt; line-height: 1.35; }
+  .catering p { font-size: 9pt; line-height: 1.35; max-width: 66mm; text-wrap: balance; }
   .qr { width: 26mm; height: 26mm; }
+
+  .col.fill > section:not(.catering) { display: flex; flex-direction: column; flex: 1 1 auto; }
+  .col.fill > section.grow-4 { flex-grow: 4; }
+  .col.fill > section.grow-3 { flex-grow: 3; }
+  .items { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 1mm; }
+  .items .item { margin-bottom: 0; padding-block: 0.6mm; }
+  .catering { flex: 0 0 auto; padding-top: 3mm; border-top: 0.25mm dotted #9a9a9a; }
 </style>
 </head>
 <body>
@@ -185,9 +192,10 @@
     <div class="grid">
 
       <!-- Column 1 -->
-      <div class="col">
+      <div class="col fill">
         <section>
           <h2>SMALL PLATES</h2>
+          <div class="items">
           <div class="item"><div class="name">Maddur Vade (Set of 3)<span class="tags"><span class="price">12</span><svg class="ic"><use href="#vegan"/></svg></span></div>
             <div class="desc">Famous flat fritters from the town of Maddur. Rice flour, semolina, onions, curry leaves, green chillies. Served with coconut chutney</div></div>
           <div class="item"><div class="name">Gobi Manchurian<span class="tags"><span class="price">16</span><svg class="ic"><use href="#vegan"/></svg></span></div>
@@ -204,13 +212,15 @@
             <div class="desc">Jumbo Punjabi samosas with spiced potato, green peas, cashew bits. Served with mint and tamarind chutneys</div></div>
           <div class="item"><div class="name">Samosa Chaat<span class="tags"><span class="price">12</span><svg class="ic"><use href="#gluten"/></svg></span></div>
             <div class="desc">Smashed shahi samosa topped with <span class="hl">ragada</span> gravy, yogurt, onions, sev. Served with mint and tamarind chutneys</div></div>
-          </section>
+          </div>
+        </section>
       </div>
 
       <!-- Column 2 -->
-      <div class="col">
-        <section>
+      <div class="col fill">
+        <section class="grow-4">
           <h2>SALADS</h2>
+          <div class="items">
           <div class="item"><div class="name">Sprouts Kosambari<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg></span></div>
             <div class="desc">Pre-soaked whole mung beans sprouted in-house, shredded carrots. Tempered with whole mustard, fresh coconut, green chilies, cilantro</div></div>
           <div class="item"><div class="name">Pancharangi Kosambari<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#nuts"/></svg></span></div>
@@ -219,16 +229,19 @@
             <div class="desc">Boiled peanuts, onions, chili powder, lime juice, cilantro</div></div>
           <div class="item"><div class="name">Kadalekaal Usli<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg></span></div>
             <div class="desc">Cooked black chickpea salad, whole mustard tempering, fresh coconut shavings, green chilies, cilantro</div></div>
-          </section>
-        <section>
+          </div>
+        </section>
+        <section class="grow-3">
           <h2>EXTRAS</h2>
-          <div class="item"><div class="name">Mosaru Sasive (6 oz)<span class="tags"><span class="price">5</span></span></div>
-            <div class="desc">Cool whole milk yogurt with ground mustard and coconut, tempered with curry leaves</div></div>
-          <div class="item"><div class="name">Coconut Chutney<span class="tags"><span class="price">5</span><svg class="ic"><use href="#vegan"/></svg></span></div>
-            <div class="desc">Fresh coconut ground with green chilies and roasted chana dal, tempered with mustard and curry leaves</div></div>
+          <div class="items">
+          <div class="item"><div class="name">Mosaru Sasive<span class="tags"><span class="price">5</span></span></div>
+            <div class="desc">Bengaloor style raita. Shredded cucumber in creamy yoghurt, cilantro</div></div>
+          <div class="item"><div class="name">Coconut Chutney<span class="tags"><span class="price">6</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Fresh coconut ground with green chilies and roasted chana dal</div></div>
           <div class="item"><div class="name">Kadlebele Chutney (Red)<span class="tags"><span class="price">5</span><svg class="ic"><use href="#vegan"/></svg></span></div>
-            <div class="desc">Roasted chana dal and dry red chilies ground with tamarind and garlic</div></div>
-          </section>
+            <div class="desc">Roasted chana dal, urad dal, byadagi chilies ground with onion, tamarind</div></div>
+          </div>
+        </section>
       </div>
 
       <!-- Column 3 -->
@@ -260,14 +273,15 @@
             <div class="desc">Set of 2 bhature, chole masala, lachha pyaaz and pickled green chilli on the side</div></div>
           <h3>Flavored Rice Combos</h3>
           <div class="note">All rice combo served with cucumber mosaru sasive (raita) and happala (urad dal papad) or crisps. Choose from</div>
-          <div class="item"><div class="name">Bengaloor Pulav <span class="hl">or</span> Vangibhath <span class="hl">or</span> Bisibele Bath<span class="tags"><span class="price">18</span><svg class="ic"><use href="#nuts"/></svg></span></div></div>
+          <div class="item"><div class="name">Bengaloor Pulav <span class="hl">or</span> Vangibhath <span class="hl">or</span> Bisibele&nbsp;Bath<span class="tags"><span class="price">18</span><svg class="ic"><use href="#nuts"/></svg></span></div></div>
           </section>
       </div>
 
       <!-- Column 4 -->
-      <div class="col">
+      <div class="col fill">
         <section>
           <h2>SWEETS</h2>
+          <div class="items">
           <div class="item"><div class="name">Anjura da Payasa<span class="tags"><span class="price">9</span><svg class="ic"><use href="#nuts"/></svg></span></div>
             <div class="desc">Dried figs and dates simmered in milk. Finished with dry fruits and nuts in ghee</div></div>
           <div class="item"><div class="name">Gasagase Payasa<span class="tags"><span class="price">9</span></span></div>
@@ -280,11 +294,12 @@
             <div class="desc">Grainy (not pasty) almond fudge, real saffron</div></div>
           <div class="item"><div class="name">Kaala Jamun (Set of 2)<span class="tags"><span class="price">8</span></span></div>
             <div class="desc">Made from scratch. Fried dumplings softened in sugar syrup, cardamom and rose essence</div></div>
-          </section>
+          </div>
+        </section>
         <section class="catering">
-          <svg class="qr" viewBox="0 0 21 21" shape-rendering="crispEdges"><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM10 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM14 0h1v1h-1zM15 0h1v1h-1zM16 0h1v1h-1zM17 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM20 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM9 2h1v1h-1zM12 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM17 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM10 3h1v1h-1zM14 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM17 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM20 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM15 6h1v1h-1zM16 6h1v1h-1zM17 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM12 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM13 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM0 9h1v1h-1zM1 9h1v1h-1zM2 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM0 10h1v1h-1zM1 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM17 10h1v1h-1zM20 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM11 12h1v1h-1zM13 12h1v1h-1zM16 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM20 12h1v1h-1zM8 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM20 13h1v1h-1zM0 14h1v1h-1zM1 14h1v1h-1zM2 14h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM11 14h1v1h-1zM13 14h1v1h-1zM15 14h1v1h-1zM17 14h1v1h-1zM20 14h1v1h-1zM0 15h1v1h-1zM6 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM11 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM18 15h1v1h-1zM19 15h1v1h-1zM20 15h1v1h-1zM0 16h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM9 16h1v1h-1zM12 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM18 16h1v1h-1zM0 17h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM12 17h1v1h-1zM14 17h1v1h-1zM16 17h1v1h-1zM17 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM19 18h1v1h-1zM20 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM9 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM18 19h1v1h-1zM19 19h1v1h-1zM0 20h1v1h-1zM1 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1z" fill="#2b2f36"/></svg>
-          <h2>CATERING AVAILABLE</h2>
-          <p>Scan to text +1 (925) 464-0522<br>email ask.blore@gmail.com<br>or contact the store</p>
+          <svg class="qr" viewBox="0 0 25 25" shape-rendering="crispEdges" role="img" aria-label="QR code to text Bengalur Ootery"><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h1v1h-1zM14 0h1v1h-1zM15 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM21 0h1v1h-1zM22 0h1v1h-1zM23 0h1v1h-1zM24 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM10 1h1v1h-1zM11 1h1v1h-1zM13 1h1v1h-1zM14 1h1v1h-1zM15 1h1v1h-1zM18 1h1v1h-1zM24 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM11 2h1v1h-1zM12 2h1v1h-1zM13 2h1v1h-1zM14 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM21 2h1v1h-1zM22 2h1v1h-1zM24 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM10 3h1v1h-1zM14 3h1v1h-1zM15 3h1v1h-1zM16 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM21 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM13 4h1v1h-1zM15 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM21 4h1v1h-1zM22 4h1v1h-1zM24 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM12 5h1v1h-1zM13 5h1v1h-1zM14 5h1v1h-1zM16 5h1v1h-1zM18 5h1v1h-1zM24 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM21 6h1v1h-1zM22 6h1v1h-1zM23 6h1v1h-1zM24 6h1v1h-1zM9 7h1v1h-1zM10 7h1v1h-1zM11 7h1v1h-1zM14 7h1v1h-1zM15 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM9 8h1v1h-1zM11 8h1v1h-1zM12 8h1v1h-1zM13 8h1v1h-1zM14 8h1v1h-1zM15 8h1v1h-1zM17 8h1v1h-1zM20 8h1v1h-1zM22 8h1v1h-1zM23 8h1v1h-1zM24 8h1v1h-1zM0 9h1v1h-1zM2 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM9 9h1v1h-1zM10 9h1v1h-1zM11 9h1v1h-1zM12 9h1v1h-1zM14 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM17 9h1v1h-1zM20 9h1v1h-1zM22 9h1v1h-1zM23 9h1v1h-1zM3 10h1v1h-1zM5 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM18 10h1v1h-1zM19 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM4 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM9 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM16 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM19 11h1v1h-1zM22 11h1v1h-1zM24 11h1v1h-1zM0 12h1v1h-1zM1 12h1v1h-1zM3 12h1v1h-1zM5 12h1v1h-1zM6 12h1v1h-1zM10 12h1v1h-1zM11 12h1v1h-1zM13 12h1v1h-1zM14 12h1v1h-1zM15 12h1v1h-1zM17 12h1v1h-1zM18 12h1v1h-1zM0 13h1v1h-1zM1 13h1v1h-1zM4 13h1v1h-1zM5 13h1v1h-1zM7 13h1v1h-1zM8 13h1v1h-1zM12 13h1v1h-1zM15 13h1v1h-1zM17 13h1v1h-1zM19 13h1v1h-1zM20 13h1v1h-1zM22 13h1v1h-1zM0 14h1v1h-1zM1 14h1v1h-1zM6 14h1v1h-1zM7 14h1v1h-1zM10 14h1v1h-1zM14 14h1v1h-1zM15 14h1v1h-1zM17 14h1v1h-1zM18 14h1v1h-1zM19 14h1v1h-1zM20 14h1v1h-1zM21 14h1v1h-1zM23 14h1v1h-1zM24 14h1v1h-1zM0 15h1v1h-1zM5 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM14 15h1v1h-1zM20 15h1v1h-1zM22 15h1v1h-1zM23 15h1v1h-1zM0 16h1v1h-1zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM7 16h1v1h-1zM8 16h1v1h-1zM10 16h1v1h-1zM11 16h1v1h-1zM12 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM17 16h1v1h-1zM18 16h1v1h-1zM19 16h1v1h-1zM20 16h1v1h-1zM21 16h1v1h-1zM22 16h1v1h-1zM23 16h1v1h-1zM24 16h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM15 17h1v1h-1zM16 17h1v1h-1zM20 17h1v1h-1zM0 18h1v1h-1zM1 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM5 18h1v1h-1zM6 18h1v1h-1zM8 18h1v1h-1zM10 18h1v1h-1zM12 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM20 18h1v1h-1zM24 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM8 19h1v1h-1zM9 19h1v1h-1zM11 19h1v1h-1zM13 19h1v1h-1zM16 19h1v1h-1zM20 19h1v1h-1zM24 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM10 20h1v1h-1zM11 20h1v1h-1zM13 20h1v1h-1zM15 20h1v1h-1zM16 20h1v1h-1zM17 20h1v1h-1zM18 20h1v1h-1zM19 20h1v1h-1zM20 20h1v1h-1zM24 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM3 21h1v1h-1zM4 21h1v1h-1zM6 21h1v1h-1zM8 21h1v1h-1zM9 21h1v1h-1zM12 21h1v1h-1zM13 21h1v1h-1zM16 21h1v1h-1zM18 21h1v1h-1zM19 21h1v1h-1zM22 21h1v1h-1zM23 21h1v1h-1zM24 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM3 22h1v1h-1zM4 22h1v1h-1zM6 22h1v1h-1zM10 22h1v1h-1zM11 22h1v1h-1zM13 22h1v1h-1zM15 22h1v1h-1zM20 22h1v1h-1zM23 22h1v1h-1zM24 22h1v1h-1zM0 23h1v1h-1zM6 23h1v1h-1zM11 23h1v1h-1zM12 23h1v1h-1zM13 23h1v1h-1zM15 23h1v1h-1zM18 23h1v1h-1zM19 23h1v1h-1zM22 23h1v1h-1zM23 23h1v1h-1zM24 23h1v1h-1zM0 24h1v1h-1zM1 24h1v1h-1zM2 24h1v1h-1zM3 24h1v1h-1zM4 24h1v1h-1zM5 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM11 24h1v1h-1zM12 24h1v1h-1zM13 24h1v1h-1zM15 24h1v1h-1zM16 24h1v1h-1zM17 24h1v1h-1zM18 24h1v1h-1zM19 24h1v1h-1zM24 24h1v1h-1z" fill="#2b2f36"/></svg>
+          <h2>NO TIPS. JUST GOOD FOOD</h2>
+          <p>Bengalur Ootery is a tip&#8209;free establishment. However a 10% service charge will be added to all orders</p>
         </section>
       </div>
 
