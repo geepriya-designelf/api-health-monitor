@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bengalur Ootery Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Open+Sans:wght@300;700;800&family=Marcellus&family=Noto+Sans+Kannada:wght@500&display=swap" rel="stylesheet">
+<style>
+  @page { size: A3 landscape; margin: 0; }
+  :root {
+    --ink: #2b2f36;
+    --red: #b3262c;
+    --paper: #fbfaf6;
+    --leaf: #c9c38a;
+    --wheat: #c8743a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); }
+  body {
+    width: 420mm; height: 297mm;
+    font-family: "Courier Prime", "Courier New", monospace;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .sheet {
+    position: relative;
+    width: 420mm; height: 297mm;
+    padding: 9mm;
+  }
+  .frame {
+    position: relative;
+    height: 100%;
+    border: 1.4mm double var(--ink);
+    padding: 5mm 8mm 4mm;
+    display: flex; flex-direction: column;
+  }
+
+  /* ---------- Masthead ---------- */
+  header { display: flex; flex-direction: column; align-items: center; margin-bottom: 4mm; }
+  .logo {
+    border: 0.9mm solid var(--ink);
+    padding: 2.4mm 7mm 2.6mm;
+    text-align: center;
+    font-family: "Open Sans", sans-serif;
+    line-height: 1;
+    outline: 0.35mm solid var(--ink);
+    outline-offset: 1.2mm;
+  }
+  .logo .l1 { font-weight: 800; font-size: 30pt; letter-spacing: 0.32em; margin-right: -0.32em; }
+  .logo .l2 { font-weight: 300; font-size: 30pt; letter-spacing: 0.32em; margin-right: -0.32em; margin-top: 1.5mm; }
+  .tagline {
+    margin-top: 3.4mm;
+    color: var(--red);
+    font-size: 14pt;
+    letter-spacing: 0.04em;
+    word-spacing: 0.5em;
+    padding: 0 6mm 1.6mm;
+    border-bottom: 0.4mm solid var(--ink);
+  }
+  .kolam { position: absolute; top: 4mm; width: 40mm; opacity: 0.55; }
+  .kolam.left { left: 8mm; }
+  .kolam.right { right: 8mm; transform: scaleX(-1); }
+
+  /* ---------- Grid ---------- */
+  .grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 0.95fr 1.35fr 0.95fr;
+    column-gap: 7mm;
+    min-height: 0;
+  }
+  .col { display: flex; flex-direction: column; gap: 3mm; }
+  .col + .col { border-left: 0.25mm dotted #9a9a9a; padding-left: 7mm; margin-left: -3.5mm; }
+
+  h2 {
+    font-weight: 700;
+    font-size: 15pt;
+    letter-spacing: 0.03em;
+    text-align: center;
+    margin-bottom: 2.2mm;
+  }
+  .item { text-align: center; margin-bottom: 2.4mm; }
+  .item .name { font-weight: 700; font-size: 11pt; line-height: 1.2; }
+  .tags { white-space: nowrap; }
+  .item .price { font-weight: 700; margin-left: 0.25em; }
+  .item .desc { font-size: 9.2pt; line-height: 1.25; margin-top: 0.4mm; }
+  .note { font-size: 8.4pt; text-align: center; line-height: 1.25; margin: -1mm 0 2.4mm; font-style: italic; }
+
+  .ic { display: inline-block; width: 4mm; height: 4mm; vertical-align: -0.8mm; margin-left: 1mm; }
+
+  /* Thali box */
+  .thali {
+    border: 0.45mm solid var(--ink);
+    border-radius: 6mm;
+    padding: 3.2mm 3mm 2.6mm;
+  }
+  .thali h2 { margin-bottom: 0.6mm; }
+  .thali .sub { text-align: center; font-size: 8.4pt; margin-bottom: 2mm; }
+  .oota { display: grid; grid-template-columns: 1fr; gap: 2mm; }
+  .oota div { text-align: center; font-size: 9pt; line-height: 1.35; }
+  .oota b { display: block; font-size: 11pt; margin-bottom: 0.8mm; }
+  .addons { border-top: 0.3mm dashed var(--ink); margin-top: 2.4mm; padding-top: 1.6mm; text-align: center; font-size: 8.2pt; line-height: 1.3; }
+
+  /* Pan Indian band */
+  .pan h2 {
+    font-family: "Marcellus", serif;
+    font-weight: 400;
+    color: var(--red);
+    font-size: 15pt;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6mm;
+  }
+  .flourish { display: block; width: 100%; height: 4mm; margin-bottom: 1.2mm; }
+
+  footer {
+    margin-top: 2mm;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 8.4pt;
+    border-top: 0.25mm solid var(--ink);
+    padding-top: 2mm;
+  }
+  .legend span { margin-right: 5mm; }
+  .legend .ic { margin: 0 1mm 0 0; }
+
+  h3 { font-size: 10pt; letter-spacing: 0.08em; text-transform: uppercase; color: var(--red); text-align: center; margin: 1mm 0 2mm; }
+  .hl { color: var(--red); }
+  .tagline.kn { font-family: "Noto Sans Kannada", sans-serif; font-size: 15pt; word-spacing: 0.2em; letter-spacing: 0.02em; }
+  .catering { text-align: center; margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 1.5mm; }
+  .catering h2 { color: var(--red); font-size: 12pt; margin: 0; }
+  .catering p { font-size: 9pt; line-height: 1.35; }
+  .qr { width: 26mm; height: 26mm; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <symbol id="vegan" viewBox="0 0 20 20">
+      <circle cx="10" cy="10" r="9" fill="#e9e4bf" stroke="#6f6a3a" stroke-width="1.2"/>
+      <path d="M6 14c0-5 3-8 8-8 0 5-3 8-8 8z" fill="none" stroke="#4d4a26" stroke-width="1.2"/>
+      <path d="M6 14l5-5" stroke="#4d4a26" stroke-width="1"/>
+    </symbol>
+    <symbol id="nuts" viewBox="0 0 20 20">
+      <circle cx="10" cy="10" r="9" fill="#fff" stroke="#2b2f36" stroke-width="1.3"/>
+      <circle cx="10" cy="10" r="6.3" fill="none" stroke="#2b2f36" stroke-width="0.9"/>
+      <path d="M8 6.5c2-1 4 0 4 2s-2 2.2-2 4 1 2.5-1 3-3-1-3-3 1.5-2 1-3.5-.6-2 1-2.5z" fill="none" stroke="#2b2f36" stroke-width="1"/>
+      <path d="M5.5 14.5l9-9" stroke="#2b2f36" stroke-width="1.1"/>
+    </symbol>
+    <symbol id="gluten" viewBox="0 0 20 20">
+      <path d="M5 4c1.5 4 3 8 4.5 12.5C11 11 13 7 16 3.5" fill="none" stroke="#c8743a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M7.4 9.5c1-.6 2-.4 2.6.6M8.6 12.6c1-.6 2-.4 2.4.5" fill="none" stroke="#c8743a" stroke-width="1.1" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="kolam" viewBox="0 0 120 70">
+      <g fill="#8a8a8a">
+        <circle cx="10" cy="10" r="1.6"/><circle cx="30" cy="10" r="1.6"/><circle cx="50" cy="10" r="1.6"/><circle cx="70" cy="10" r="1.6"/>
+        <circle cx="20" cy="22" r="1.6"/><circle cx="40" cy="22" r="1.6"/><circle cx="60" cy="22" r="1.6"/>
+        <circle cx="10" cy="34" r="1.6"/><circle cx="30" cy="34" r="1.6"/><circle cx="50" cy="34" r="1.6"/>
+        <circle cx="20" cy="46" r="1.6"/><circle cx="40" cy="46" r="1.6"/>
+        <circle cx="10" cy="58" r="1.6"/><circle cx="30" cy="58" r="1.6"/>
+      </g>
+      <g fill="none" stroke="#9a9a9a" stroke-width="0.9">
+        <path d="M10 2 Q20 10 10 18 Q0 10 10 2Z M30 2 Q40 10 30 18 Q20 10 30 2Z M50 2 Q60 10 50 18 Q40 10 50 2Z M70 2 Q80 10 70 18 Q60 10 70 2Z"/>
+        <path d="M20 14 Q30 22 20 30 Q10 22 20 14Z M40 14 Q50 22 40 30 Q30 22 40 14Z M60 14 Q70 22 60 30 Q50 22 60 14Z"/>
+        <path d="M10 26 Q20 34 10 42 Q0 34 10 26Z M30 26 Q40 34 30 42 Q20 34 30 26Z M50 26 Q60 34 50 42 Q40 34 50 26Z"/>
+        <path d="M20 38 Q30 46 20 54 Q10 46 20 38Z M40 38 Q50 46 40 54 Q30 46 40 38Z"/>
+        <path d="M10 50 Q20 58 10 66 Q0 58 10 50Z M30 50 Q40 58 30 66 Q20 58 30 50Z"/>
+        <path d="M2 2 H90 M2 2 V68" stroke-dasharray="1 2.5"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="sheet">
+  <div class="frame">
+    <svg class="kolam left" viewBox="0 0 120 70"><use href="#kolam"/></svg>
+    <svg class="kolam right" viewBox="0 0 120 70"><use href="#kolam"/></svg>
+
+    <header>
+      <div class="logo">
+        <div class="l1">BENGALUR</div>
+        <div class="l2">OOTERY</div>
+      </div>
+      <div class="tagline kn">ಬೆಂಗಳೂರ್ ಊಟರಿ</div>
+    </header>
+
+    <div class="grid">
+
+      <!-- Column 1 -->
+      <div class="col">
+        <section>
+          <h2>SMALL PLATES</h2>
+          <div class="item"><div class="name">Maddur Vade (Set of 3)<span class="tags"><span class="price">12</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Famous flat fritters from the town of Maddur. Rice flour, semolina, onions, curry leaves, green chillies. Served with coconut chutney</div></div>
+          <div class="item"><div class="name">Gobi Manchurian<span class="tags"><span class="price">16</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Bengaloor street style crispy cauliflower, sinister dark soy sauce, laced with finely minced onion, ginger and garlic</div></div>
+          <div class="item"><div class="name">Onion Jalapeño Pakoda<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Crispy, full bodied chickpea flour fritters with onions and jalapeños</div></div>
+          <div class="item"><div class="name">Masale Puri<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#nuts"/></svg></span></div>
+            <div class="desc">Crushed crispy puris topped with dried peas gravy, onions, tomatoes, roasted peanuts, fine sev</div></div>
+          <div class="item"><div class="name">Masale Mandakki<span class="tags"><span class="price">9</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#nuts"/></svg></span></div>
+            <div class="desc">Bengaloor bhel puri. A style salad of puffed rice, onions, tomatoes, chili powder, crispies, peanuts, cilantro</div></div>
+          <div class="item"><div class="name">Cocktail Samosa<span class="tags"><span class="price">9</span></span></div>
+            <div class="desc">Six mini samosas, our signature mint and tamarind chutneys</div></div>
+          <div class="item"><div class="name">Shahi Samosa (Set of 3)<span class="tags"><span class="price">12</span><svg class="ic"><use href="#gluten"/></svg></span></div>
+            <div class="desc">Jumbo Punjabi samosas with spiced potato, green peas, cashew bits. Served with mint and tamarind chutneys</div></div>
+          <div class="item"><div class="name">Samosa Chaat<span class="tags"><span class="price">12</span><svg class="ic"><use href="#gluten"/></svg></span></div>
+            <div class="desc">Smashed shahi samosa topped with <span class="hl">ragada</span> gravy, yogurt, onions, sev. Served with mint and tamarind chutneys</div></div>
+          </section>
+      </div>
+
+      <!-- Column 2 -->
+      <div class="col">
+        <section>
+          <h2>SALADS</h2>
+          <div class="item"><div class="name">Sprouts Kosambari<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Pre-soaked whole mung beans sprouted in-house, shredded carrots. Tempered with whole mustard, fresh coconut, green chilies, cilantro</div></div>
+          <div class="item"><div class="name">Pancharangi Kosambari<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#nuts"/></svg></span></div>
+            <div class="desc">Slivered green papaya, cabbage, bell peppers, onion, cucumber, boiled peanuts, green mango (seasonal) mixed in a minty green dressing. Topped with bhel crispies</div></div>
+          <div class="item"><div class="name">Peanut Masala<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#nuts"/></svg></span></div>
+            <div class="desc">Boiled peanuts, onions, chili powder, lime juice, cilantro</div></div>
+          <div class="item"><div class="name">Kadalekaal Usli<span class="tags"><span class="price">10</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Cooked black chickpea salad, whole mustard tempering, fresh coconut shavings, green chilies, cilantro</div></div>
+          </section>
+        <section>
+          <h2>EXTRAS</h2>
+          <div class="item"><div class="name">Mosaru Sasive (6 oz)<span class="tags"><span class="price">5</span></span></div>
+            <div class="desc">Cool whole milk yogurt with ground mustard and coconut, tempered with curry leaves</div></div>
+          <div class="item"><div class="name">Coconut Chutney<span class="tags"><span class="price">5</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Fresh coconut ground with green chilies and roasted chana dal, tempered with mustard and curry leaves</div></div>
+          <div class="item"><div class="name">Kadlebele Chutney (Red)<span class="tags"><span class="price">5</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Roasted chana dal and dry red chilies ground with tamarind and garlic</div></div>
+          </section>
+      </div>
+
+      <!-- Column 3 -->
+      <div class="col">
+        <section class="thali">
+          <h2>THALI OOTA</h2>
+          <div class="sub">Meals ready!</div>
+          <div class="oota">
+            <div><b>Basic Oota 22</b>Sprouts kosambari, Avarekal Saagu, Beetroot Palya, Huli, Saaru, Plain Rice, Sweet<br><span class="hl">Choose 1 bread:</span> akki / raagi / chapati / poori</div>
+            <div><b>Flexi Oota 28</b>Sprouts kosambari, Avarekal Saagu, Sweet, Plain Rice<br><span class="hl">Choose 1:</span> Beetroot / cashew / bhendakai / sopina Palya<br><span class="hl">Choose 1:</span> Huli / Kootu / Majike huli / gojju<br><span class="hl">Choose 1 bread:</span> akki / raagi / chapati / poori</div>
+          </div>
+        </section>
+        <section>
+          <h2>COMBO MEALS</h2>
+          <h3>Indian Bread Combos</h3>
+          <div class="item"><div class="name">Akki Rotti Combo<span class="tags"><span class="price">18</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Set of 2 rice flour flat breads, saagu, chutneys</div></div>
+          <div class="item"><div class="name">Ragi Rotti Combo<span class="tags"><span class="price">18</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">Set of 2 finger millet flat breads, saagu, chutneys</div></div>
+          <div class="item"><div class="name">Akki-Ragi Rotti Combo<span class="tags"><span class="price">18</span><svg class="ic"><use href="#vegan"/></svg></span></div>
+            <div class="desc">1 rice flour flat bread, 1 finger millet flat bread, saagu, chutneys</div></div>
+          <div class="item"><div class="name">Poori Saagu Combo<span class="tags"><span class="price">19</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#gluten"/></svg></span></div>
+            <div class="desc">2 pooris with saagu and mango seekarne</div></div>
+          <div class="item"><div class="name">Chapathi Saagu Combo<span class="tags"><span class="price">19</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#gluten"/></svg></span></div>
+            <div class="desc">2 chapathis, saagu and mango seekarne</div></div>
+          <div class="item"><div class="name">Mixed Veg Paratha Combo<span class="tags"><span class="price">19</span><svg class="ic"><use href="#gluten"/></svg></span></div>
+            <div class="desc">Set of 2 parathas, cucumber raita, mint chutney, lachha pyaaz and pickled green chilli on the side</div></div>
+          <div class="item"><div class="name">Chole Bhature<span class="tags"><span class="price">19</span><svg class="ic"><use href="#vegan"/></svg><svg class="ic"><use href="#gluten"/></svg></span></div>
+            <div class="desc">Set of 2 bhature, chole masala, lachha pyaaz and pickled green chilli on the side</div></div>
+          <h3>Flavored Rice Combos</h3>
+          <div class="note">All rice combo served with cucumber mosaru sasive (raita) and happala (urad dal papad) or crisps. Choose from</div>
+          <div class="item"><div class="name">Bengaloor Pulav <span class="hl">or</span> Vangibhath <span class="hl">or</span> Bisibele Bath<span class="tags"><span class="price">18</span><svg class="ic"><use href="#nuts"/></svg></span></div></div>
+          </section>
+      </div>
+
+      <!-- Column 4 -->
+      <div class="col">
+        <section>
+          <h2>SWEETS</h2>
+          <div class="item"><div class="name">Anjura da Payasa<span class="tags"><span class="price">9</span><svg class="ic"><use href="#nuts"/></svg></span></div>
+            <div class="desc">Dried figs and dates simmered in milk. Finished with dry fruits and nuts in ghee</div></div>
+          <div class="item"><div class="name">Gasagase Payasa<span class="tags"><span class="price">9</span></span></div>
+            <div class="desc">Poppy seeds, coconut and jaggery simmered into a creamy payasa of drinkable consistency</div></div>
+          <div class="item"><div class="name">Maavina Seekarne<span class="tags"><span class="price">8</span></span></div>
+            <div class="desc">Premium Indian mango pulp, mango mash, whole milk, saffron, cardamom, cane sugar</div></div>
+          <div class="item"><div class="name">Basundi<span class="tags"><span class="price">9</span></span></div>
+            <div class="desc">Rich whole milk slow cooked for hours on an open flame to creamy deliciousness</div></div>
+          <div class="item"><div class="name">Badam Halwa<span class="tags"><span class="price">8</span><svg class="ic"><use href="#nuts"/></svg></span></div>
+            <div class="desc">Grainy (not pasty) almond fudge, real saffron</div></div>
+          <div class="item"><div class="name">Kaala Jamun (Set of 2)<span class="tags"><span class="price">8</span></span></div>
+            <div class="desc">Made from scratch. Fried dumplings softened in sugar syrup, cardamom and rose essence</div></div>
+          </section>
+        <section class="catering">
+          <svg class="qr" viewBox="0 0 21 21" shape-rendering="crispEdges"><path d="M0 0h1v1h-1zM1 0h1v1h-1zM2 0h1v1h-1zM3 0h1v1h-1zM4 0h1v1h-1zM5 0h1v1h-1zM6 0h1v1h-1zM8 0h1v1h-1zM9 0h1v1h-1zM10 0h1v1h-1zM11 0h1v1h-1zM12 0h1v1h-1zM14 0h1v1h-1zM15 0h1v1h-1zM16 0h1v1h-1zM17 0h1v1h-1zM18 0h1v1h-1zM19 0h1v1h-1zM20 0h1v1h-1zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h1v1h-1zM9 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM20 1h1v1h-1zM0 2h1v1h-1zM2 2h1v1h-1zM3 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM8 2h1v1h-1zM9 2h1v1h-1zM12 2h1v1h-1zM14 2h1v1h-1zM16 2h1v1h-1zM17 2h1v1h-1zM18 2h1v1h-1zM20 2h1v1h-1zM0 3h1v1h-1zM2 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM6 3h1v1h-1zM10 3h1v1h-1zM14 3h1v1h-1zM16 3h1v1h-1zM17 3h1v1h-1zM18 3h1v1h-1zM20 3h1v1h-1zM0 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM6 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM11 4h1v1h-1zM12 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM17 4h1v1h-1zM18 4h1v1h-1zM20 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM11 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM20 5h1v1h-1zM0 6h1v1h-1zM1 6h1v1h-1zM2 6h1v1h-1zM3 6h1v1h-1zM4 6h1v1h-1zM5 6h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM15 6h1v1h-1zM16 6h1v1h-1zM17 6h1v1h-1zM18 6h1v1h-1zM19 6h1v1h-1zM20 6h1v1h-1zM12 7h1v1h-1zM0 8h1v1h-1zM3 8h1v1h-1zM4 8h1v1h-1zM5 8h1v1h-1zM6 8h1v1h-1zM7 8h1v1h-1zM8 8h1v1h-1zM10 8h1v1h-1zM12 8h1v1h-1zM13 8h1v1h-1zM16 8h1v1h-1zM18 8h1v1h-1zM19 8h1v1h-1zM20 8h1v1h-1zM0 9h1v1h-1zM1 9h1v1h-1zM2 9h1v1h-1zM4 9h1v1h-1zM5 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM16 9h1v1h-1zM0 10h1v1h-1zM1 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h1v1h-1zM11 10h1v1h-1zM12 10h1v1h-1zM14 10h1v1h-1zM15 10h1v1h-1zM17 10h1v1h-1zM20 10h1v1h-1zM0 11h1v1h-1zM1 11h1v1h-1zM3 11h1v1h-1zM5 11h1v1h-1zM7 11h1v1h-1zM8 11h1v1h-1zM10 11h1v1h-1zM14 11h1v1h-1zM15 11h1v1h-1zM17 11h1v1h-1zM18 11h1v1h-1zM2 12h1v1h-1zM3 12h1v1h-1zM6 12h1v1h-1zM7 12h1v1h-1zM8 12h1v1h-1zM11 12h1v1h-1zM13 12h1v1h-1zM16 12h1v1h-1zM18 12h1v1h-1zM19 12h1v1h-1zM20 12h1v1h-1zM8 13h1v1h-1zM9 13h1v1h-1zM10 13h1v1h-1zM12 13h1v1h-1zM14 13h1v1h-1zM15 13h1v1h-1zM18 13h1v1h-1zM20 13h1v1h-1zM0 14h1v1h-1zM1 14h1v1h-1zM2 14h1v1h-1zM3 14h1v1h-1zM4 14h1v1h-1zM5 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM9 14h1v1h-1zM11 14h1v1h-1zM13 14h1v1h-1zM15 14h1v1h-1zM17 14h1v1h-1zM20 14h1v1h-1zM0 15h1v1h-1zM6 15h1v1h-1zM8 15h1v1h-1zM9 15h1v1h-1zM10 15h1v1h-1zM11 15h1v1h-1zM12 15h1v1h-1zM13 15h1v1h-1zM14 15h1v1h-1zM15 15h1v1h-1zM16 15h1v1h-1zM18 15h1v1h-1zM19 15h1v1h-1zM20 15h1v1h-1zM0 16h1v1h-1zM2 16h1v1h-1zM3 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM9 16h1v1h-1zM12 16h1v1h-1zM14 16h1v1h-1zM15 16h1v1h-1zM16 16h1v1h-1zM18 16h1v1h-1zM0 17h1v1h-1zM2 17h1v1h-1zM3 17h1v1h-1zM4 17h1v1h-1zM6 17h1v1h-1zM8 17h1v1h-1zM9 17h1v1h-1zM11 17h1v1h-1zM12 17h1v1h-1zM14 17h1v1h-1zM16 17h1v1h-1zM17 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM3 18h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM14 18h1v1h-1zM16 18h1v1h-1zM18 18h1v1h-1zM19 18h1v1h-1zM20 18h1v1h-1zM0 19h1v1h-1zM6 19h1v1h-1zM9 19h1v1h-1zM13 19h1v1h-1zM14 19h1v1h-1zM18 19h1v1h-1zM19 19h1v1h-1zM0 20h1v1h-1zM1 20h1v1h-1zM2 20h1v1h-1zM3 20h1v1h-1zM4 20h1v1h-1zM5 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM9 20h1v1h-1zM12 20h1v1h-1zM13 20h1v1h-1zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1z" fill="#2b2f36"/></svg>
+          <h2>CATERING AVAILABLE</h2>
+          <p>Scan to text +1 (925) 464-0522<br>email ask.blore@gmail.com<br>or contact the store</p>
+        </section>
+      </div>
+
+    </div>
+
+    <footer>
+      <div class="legend">
+        <span><svg class="ic"><use href="#vegan"/></svg>Vegan</span>
+        <span><svg class="ic"><use href="#nuts"/></svg>Contains nuts</span>
+        <span><svg class="ic"><use href="#gluten"/></svg>Contains gluten</span>
+      </div>
+      <div>Some of our dishes contain ghee, paneer, nuts and/or gluten. Sadly, we cannot guarantee an allergen free environment in our kitchen.</div>
+    </footer>
+  </div>
+</div>
+</body>
+</html>
